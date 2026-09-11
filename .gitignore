@@ -3,3 +3,5 @@ jobboard/node_modules
 jobboard-api/node_modules
 jobboard-api/.env
 
+.vercel
+.env*

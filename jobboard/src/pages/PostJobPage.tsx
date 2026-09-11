@@ -13,7 +13,7 @@ const postJobSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   salary_min: z.string().optional(),
   salary_max: z.string().optional(),
-  currency: z.string().default('PHP'),
+  currency: z.string().min(1).default('PHP'),
   description: z.string().min(100, 'Description must be at least 100 characters'),
   requirements: z.string().optional(),
   apply_email: z.string().email('Valid email required'),
@@ -26,8 +26,16 @@ const CATEGORIES = ['Engineering', 'Design', 'DevOps', 'Marketing', 'Sales', 'Pr
 const PostJobPage = () => {
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm<PostJobForm>({
-    resolver: zodResolver(postJobSchema),
-    defaultValues: { type: 'full-time', currency: 'PHP', category: 'Engineering' },
+    resolver: zodResolver(postJobSchema) as any,
+    defaultValues: { 
+      type: 'full-time', 
+      currency: 'PHP', 
+      category: 'Engineering', 
+      title: '', 
+      company: '', 
+      location: '', 
+      description: '', 
+      apply_email: '' },
   });
 
   const mutation = useMutation({
