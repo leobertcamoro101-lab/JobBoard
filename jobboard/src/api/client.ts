@@ -1,8 +1,18 @@
 import axios from 'axios';
 import type { Job, JobFilters } from '../types';
 
+// const api = axios.create({
+//   baseURL: '/api',
+//   headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+// });
+
+// const api = axios.create({
+//   baseURL: 'https://your-railway-url.up.railway.app/api',
+//   headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+// });
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
 });
 
