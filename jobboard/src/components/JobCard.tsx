@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom';
 import type { Job } from '../types';
 
 const TYPE_COLORS = {
-  'full-time': 'bg-green-500/10 text-green-400 border-green-500/20',
-  'part-time': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  'remote': 'bg-violet-500/10 text-violet-400 border-violet-500/20',
-  'contract': 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+  'full-time': 'bg-evergreen/10 text-evergreen border-evergreen/20',
+  'part-time': 'bg-blue-50 text-blue-700 border-blue-200',
+  'remote': 'bg-violet-50 text-violet-700 border-violet-200',
+  'contract': 'bg-orange-50 text-orange-700 border-orange-200',
 };
 
 const JobCard = ({ job }: { job: Job }) => {
@@ -25,11 +25,11 @@ const JobCard = ({ job }: { job: Job }) => {
 
   return (
     <Link to={`/jobs/${job.id}`}
-      className="block bg-gray-800/50 border border-gray-700/50 hover:border-violet-400/50
-                 hover:bg-gray-800 rounded-2xl p-5 sm:p-6 transition-all group">
+      className="block bg-white border border-hairline hover:border-evergreen/40
+                 hover:shadow-md rounded-2xl p-5 sm:p-6 transition-all group">
       <div className="flex items-start justify-between gap-3 mb-4">
-        <div className="w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center
-                        text-xl font-bold text-white shrink-0">
+        <div className="w-12 h-12 bg-evergreen/10 rounded-xl flex items-center justify-center
+                        text-xl font-bold text-evergreen shrink-0">
           {job.company.charAt(0)}
         </div>
         <span className={`text-xs px-2.5 py-1 rounded-full border font-medium capitalize shrink-0
@@ -38,29 +38,29 @@ const JobCard = ({ job }: { job: Job }) => {
         </span>
       </div>
 
-      <h2 className="text-white font-bold text-lg mb-1 group-hover:text-violet-300 transition-colors
+      <h2 className="text-ink font-bold text-lg mb-1 group-hover:text-evergreen transition-colors
                      leading-tight">
         {job.title}
       </h2>
-      <p className="text-gray-400 text-sm mb-1">{job.company}</p>
-      <p className="text-gray-500 text-xs mb-4">📍 {job.location}</p>
+      <p className="text-ink/60 text-sm mb-1">{job.company}</p>
+      <p className="text-ink/40 text-xs mb-4">📍 {job.location}</p>
 
-      <p className="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-2">
+      <p className="text-ink/60 text-sm leading-relaxed mb-4 line-clamp-2">
         {job.description}
       </p>
 
       <div className="flex items-center justify-between">
         <div className="flex flex-wrap gap-2">
-          <span className="bg-gray-700/50 text-gray-400 text-xs px-2 py-1 rounded-lg">
+          <span className="bg-hairline/50 text-ink/70 text-xs px-2 py-1 rounded-lg">
             {job.category}
           </span>
           {salary && (
-            <span className="bg-gray-700/50 text-gray-300 text-xs px-2 py-1 rounded-lg font-medium">
+            <span className="bg-hairline/50 text-ink/80 text-xs px-2 py-1 rounded-lg font-medium">
               💰 {salary}
             </span>
           )}
         </div>
-        <div className="flex items-center gap-3 text-xs text-gray-500 shrink-0">
+        <div className="flex items-center gap-3 text-xs text-ink/40 shrink-0">
           {job.applications_count !== undefined && (
             <span>👥 {job.applications_count} applied</span>
           )}
