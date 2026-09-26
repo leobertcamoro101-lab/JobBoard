@@ -30,4 +30,10 @@ export const createJob = (data: Partial<Job>) =>
 export const applyForJob = (jobId: number, data: object) =>
   api.post(`/jobs/${jobId}/apply`, data).then(r => r.data);
 
+// Logins
+export const loginApplicant = (data: { email: string; password: string; remember?: boolean }) =>
+  api.post('/applicant/login', data).then(res => res.data);
+export const loginEmployer = (data: { email: string; password: string; remember?: boolean }) =>
+  api.post('/employer/login', data).then(res => res.data);
+
 export default api;

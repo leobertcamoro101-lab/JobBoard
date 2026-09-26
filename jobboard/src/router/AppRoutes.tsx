@@ -3,6 +3,8 @@ import RootLayout from "./RootLayout";
 import HomePage from "../pages/HomePage";
 import JobDetailPage from "../pages/JobDetailPage";
 import PostJobPage from "../pages/PostJobPage";
+import ApplicantLogin from "../pages/ApplicantLogin";
+import EmployerLogin from "../pages/EmployerLogin";
 
 const router = createBrowserRouter([
   {
@@ -11,6 +13,8 @@ const router = createBrowserRouter([
       { path: '/', element: <HomePage /> },
       { path: '/jobs/:id', element: <JobDetailPage /> },
       { path: '/post', element: <PostJobPage /> },
+      { path: '/applicants', element: <ApplicantLogin /> },
+      { path: '/employers', element: <EmployerLogin /> }
     ],
   },
 ]);
