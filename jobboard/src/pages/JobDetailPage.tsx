@@ -99,7 +99,7 @@ const JobDetailPage = () => {
             <div className="bg-white border border-hairline rounded-2xl p-6">
               <h2 className="text-ink font-bold text-lg mb-4">Requirements</h2>
               <ul className="space-y-2">
-                {requirements.map((req, i) => (
+                {requirements.map((req: string, i: number) => (
                   <li key={i} className="flex items-start gap-2 text-ink/60 text-sm">
                     <span className="text-evergreen mt-0.5">▸</span>
                     {req}

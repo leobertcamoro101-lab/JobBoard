@@ -84,10 +84,22 @@ export const confirmEmployerSignup = (
 };
 
 // Jobs
-export const getJobs = (params?: JobFilters): Promise<AxiosResponse<Job[]>> => api.get('/jobs', { params });
-export const getJob = (id: number): Promise<AxiosResponse<Job>> => api.get(`/jobs/${id}`);
-export const createJob = (data: Partial<Job>): Promise<AxiosResponse<Job>> => api.post('/jobs', data).then(r => r.data);
-export const applyForJob = (jobId: number, data: unknown): Promise<AxiosResponse<MessageResponse>> =>
-  api.post(`/jobs/${jobId}/apply`, data);
+// export const getJobs = (params?: JobFilters): Promise<AxiosResponse<Job[]>> => api.get('/jobs', { params });
+// export const getJob = (id: number): Promise<AxiosResponse<Job>> => api.get(`/jobs/${id}`);
+// export const createJob = (data: Partial<Job>): Promise<AxiosResponse<Job>> => api.post('/jobs', data).then(r => r.data);
+// export const applyForJob = (jobId: number, data: unknown): Promise<AxiosResponse<MessageResponse>> =>
+//   api.post(`/jobs/${jobId}/apply`, data);
+// Jobs
+export const getJobs = (params?: JobFilters): Promise<Job[]> =>
+  api.get('/jobs', { params }).then((res) => res.data);
+
+export const getJob = (id: number): Promise<Job> =>
+  api.get(`/jobs/${id}`).then((res) => res.data);
+
+export const createJob = (data: Partial<Job>): Promise<Job> =>
+  api.post('/jobs', data).then((res) => res.data);
+
+export const applyForJob = (jobId: number, data: unknown): Promise<{ message: string }> =>
+  api.post(`/jobs/${jobId}/apply`, data).then((res) => res.data);
 
 export default api;
