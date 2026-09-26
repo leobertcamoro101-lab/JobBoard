@@ -5,6 +5,8 @@ import JobDetailPage from "../pages/JobDetailPage";
 import PostJobPage from "../pages/PostJobPage";
 import ApplicantLogin from "../pages/ApplicantLogin";
 import EmployerLogin from "../pages/EmployerLogin";
+import ApplicantSignup from "../pages/ApplicantSignup";
+import EmployerSignup from "../pages/EmployerSignup";
 
 const router = createBrowserRouter([
   {
@@ -14,7 +16,9 @@ const router = createBrowserRouter([
       { path: '/jobs/:id', element: <JobDetailPage /> },
       { path: '/post', element: <PostJobPage /> },
       { path: '/applicants', element: <ApplicantLogin /> },
-      { path: '/employers', element: <EmployerLogin /> }
+      { path: '/employers', element: <EmployerLogin /> },
+      { path: '/applicants/signup', element: <ApplicantSignup /> },
+      { path: '/employers/signup', element: <EmployerSignup /> }
     ],
   },
 ]);

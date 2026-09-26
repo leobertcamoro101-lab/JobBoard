@@ -4,14 +4,16 @@ import { ChevronDown, SquareUser, Briefcase, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const { pathname } = useLocation();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [loginMenuOpen, setLoginMenuOpen] = useState(false);
+  const [signupMenuOpen, setSignupMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const linkClasses =
     'w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 no-underline';
 
   const closeAll = () => {
-    setMenuOpen(false);
+    setLoginMenuOpen(false);
+    setSignupMenuOpen(false);
     setMobileOpen(false);
   };
 
@@ -28,20 +30,21 @@ const Navbar = () => {
 
         {/* Desktop nav */}
         <div className="hidden sm:flex items-center gap-3">
-          <Link to="/applicants"
+          <Link to="/applicants/signup"
             className="text-sm font-medium text-evergreen hover:text-evergreen-dark transition-colors">
             Post a Resume
           </Link>
+
           <div className="relative">
             <button
-              onClick={() => setMenuOpen((open) => !open)}
+              onClick={() => { setLoginMenuOpen(o => !o); setSignupMenuOpen(false); }}
               className="flex items-center gap-1 px-2 py-1.5 hover:bg-gray-100 transition-colors rounded-lg"
-              aria-label="Auth menu"
+              aria-label="Login menu"
             >
               Login
               <ChevronDown size={16} className="text-gray-500" />
             </button>
-            {menuOpen && (
+            {loginMenuOpen && (
               <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
                 <Link to="/applicants" onClick={closeAll} className={linkClasses}>
                   <SquareUser size={16} /> Applicant
@@ -52,6 +55,29 @@ const Navbar = () => {
               </div>
             )}
           </div>
+
+          <div className="relative">
+            <button
+              onClick={() => { setSignupMenuOpen(o => !o); setLoginMenuOpen(false); }}
+              className="flex items-center gap-1 px-3 py-1.5 border border-evergreen text-evergreen
+                         hover:bg-evergreen/5 rounded-lg text-sm font-medium transition-colors"
+              aria-label="Sign up menu"
+            >
+              Sign Up
+              <ChevronDown size={16} />
+            </button>
+            {signupMenuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
+                <Link to="/applicants/signup" onClick={closeAll} className={linkClasses}>
+                  <SquareUser size={16} /> As Applicant
+                </Link>
+                <Link to="/employers/signup" onClick={closeAll} className={linkClasses}>
+                  <Briefcase size={16} /> As Employer
+                </Link>
+              </div>
+            )}
+          </div>
+
           <Link to="/"
             className={`text-sm font-medium transition-colors ${
               pathname === '/' ? 'text-ink' : 'text-ink/50 hover:text-ink'
@@ -67,7 +93,7 @@ const Navbar = () => {
 
         {/* Mobile hamburger */}
         <button
-          onClick={() => setMobileOpen((open) => !open)}
+          onClick={() => setMobileOpen(o => !o)}
           className="sm:hidden p-2 -mr-2 text-ink hover:bg-gray-100 rounded-lg transition-colors"
           aria-label="Toggle menu"
         >
@@ -86,11 +112,19 @@ const Navbar = () => {
           </Link>
           <Link to="/applicants" onClick={closeAll}
             className="flex items-center gap-2 px-2 py-2.5 text-sm font-medium text-ink/60 hover:bg-gray-50 rounded-lg">
-            <SquareUser size={16} /> Applicant Login / Post a Resume
+            <SquareUser size={16} /> Applicant Login
+          </Link>
+          <Link to="/applicants/signup" onClick={closeAll}
+            className="flex items-center gap-2 px-2 py-2.5 text-sm font-medium text-evergreen hover:bg-gray-50 rounded-lg">
+            <SquareUser size={16} /> Sign Up as Applicant
           </Link>
           <Link to="/employers" onClick={closeAll}
             className="flex items-center gap-2 px-2 py-2.5 text-sm font-medium text-ink/60 hover:bg-gray-50 rounded-lg">
             <Briefcase size={16} /> Employer Login
+          </Link>
+          <Link to="/employers/signup" onClick={closeAll}
+            className="flex items-center gap-2 px-2 py-2.5 text-sm font-medium text-evergreen hover:bg-gray-50 rounded-lg">
+            <Briefcase size={16} /> Sign Up as Employer
           </Link>
           <Link to="/post" onClick={closeAll}
             className="block text-center bg-evergreen hover:bg-evergreen-dark text-white text-sm
