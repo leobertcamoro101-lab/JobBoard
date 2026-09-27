@@ -10,13 +10,16 @@ class Application extends Model
     use HasFactory;
 
     protected $fillable = [
-        'job_id', 'name', 'email', 'phone',
-        'linkedin', 'portfolio', 'cover_letter',
-        'resume_url', 'status',
+        'job_id', 'user_id', 'name', 'email', 'phone',
+        'linkedin', 'portfolio', 'cover_letter', 'status',
     ];
 
     public function job()
     {
         return $this->belongsTo(Job::class);
+    }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

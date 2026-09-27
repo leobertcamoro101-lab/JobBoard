@@ -86,4 +86,13 @@ class JobController extends Controller
         $job->delete();
         return response()->json(['message' => 'Job deleted']);
     }
+
+    public function myJobs(Request $request)
+    {
+        return $request->user()
+            ->jobs() // hasMany relationship on User, via employer_id
+            ->withCount('applications as applicants_count')
+            ->latest()
+            ->get();
+    }
 }

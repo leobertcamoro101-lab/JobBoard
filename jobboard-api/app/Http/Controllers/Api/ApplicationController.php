@@ -46,4 +46,21 @@ class ApplicationController extends Controller
             $job->applications()->orderBy('created_at', 'desc')->get()
         );
     }
+
+		public function myApplications(Request $request)
+		{
+				return $request->user()
+						->applications() // hasMany relationship on User
+						->with('job:id,title,company')
+						->latest()
+						->get()
+						->map(fn ($app) => [
+								'id' => $app->id,
+								'job_id' => $app->job_id,
+								'job_title' => $app->job->title,
+								'company' => $app->job->company,
+								'status' => $app->status,
+								'created_at' => $app->created_at,
+						]);
+		}
 }
