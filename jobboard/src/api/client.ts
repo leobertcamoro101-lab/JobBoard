@@ -1,4 +1,6 @@
 import axios, { type AxiosResponse } from 'axios';
+import type { Application, EmployerJob } from '../types';
+
 import type {
   User, LoginPayload, ApplicantRegisterPayload, EmployerRegisterPayload,
   RegisterStep1Response, ConfirmSignupPayload, ResendCodePayload,
@@ -82,6 +84,12 @@ export const confirmEmployerSignup = (
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 };
+
+export const getMyApplications = (): Promise<Application[]> =>
+  api.get('/applicant/applications').then((res) => res.data);
+
+export const getEmployerJobs = (): Promise<EmployerJob[]> =>
+  api.get('/employer/jobs').then((res) => res.data);
 
 // Jobs
 // export const getJobs = (params?: JobFilters): Promise<AxiosResponse<Job[]>> => api.get('/jobs', { params });

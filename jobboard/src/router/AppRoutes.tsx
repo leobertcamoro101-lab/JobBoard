@@ -1,12 +1,15 @@
 import { createBrowserRouter } from "react-router-dom";
 import RootLayout from "./RootLayout";
-import HomePage from "../pages/HomePage";
-import JobDetailPage from "../pages/JobDetailPage";
-import PostJobPage from "../pages/PostJobPage";
-import ApplicantLogin from "../pages/ApplicantLogin";
-import EmployerLogin from "../pages/EmployerLogin";
-import ApplicantSignup from "../pages/ApplicantSignup";
-import EmployerSignup from "../pages/EmployerSignup";
+import ProtectedRoute from "../navigation/ProtectedRoute";
+import HomePage from "../pages/guest/HomePage";
+import JobDetailPage from "../pages/guest/JobDetailPage";
+import PostJobPage from "../pages/guest/PostJobPage";
+import ApplicantLogin from "../pages/guest/ApplicantLogin";
+import EmployerLogin from "../pages/guest/EmployerLogin";
+import ApplicantSignup from "../pages/guest/ApplicantSignup";
+import EmployerSignup from "../pages/guest/EmployerSignup";
+import ApplicantDashboard from "../pages/authenticated/ApplicantDashboard";
+import EmployerDashboard from "../pages/authenticated/EmployerDashboard";
 
 const router = createBrowserRouter([
   {
@@ -18,7 +21,23 @@ const router = createBrowserRouter([
       { path: '/applicants', element: <ApplicantLogin /> },
       { path: '/employers', element: <EmployerLogin /> },
       { path: '/applicants/signup', element: <ApplicantSignup /> },
-      { path: '/employers/signup', element: <EmployerSignup /> }
+      { path: '/employers/signup', element: <EmployerSignup /> },
+      {
+        path: '/applicants/dashboard',
+        element: (
+          <ProtectedRoute role="applicant">
+            <ApplicantDashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/employers/dashboard',
+        element: (
+          <ProtectedRoute role="employer">
+            <EmployerDashboard />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ]);

@@ -1,4 +1,18 @@
 export type UserRole = 'applicant' | 'employer';
+export type ApplicationStatus = 'pending' | 'reviewed' | 'accepted' | 'rejected';
+
+export interface Application {
+  id: number;
+  job_id: number;
+  job_title: string;
+  company: string;
+  status: ApplicationStatus;
+  created_at: string;
+}
+
+export interface EmployerJob extends Job {
+  applicants_count: number;
+}
 
 export interface User {
   id: number;

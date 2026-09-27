@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation } from '@tanstack/react-query';
-import { createJob } from '../api/client';
+import { createJob } from '../../api/client';
 
 const postJobSchema = z.object({
   title: z.string().min(3, 'Job title is required'),

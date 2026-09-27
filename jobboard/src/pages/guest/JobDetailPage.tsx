@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getJob } from '../api/client';
-import ApplyModal from '../components/ApplyModal';
+import { getJob } from '../../api/client';
+import ApplyModal from '../../components/ApplyModal';
 
 const TYPE_COLORS: Record<string, string> = {
   'full-time': 'bg-evergreen/10 text-evergreen border-evergreen/20',

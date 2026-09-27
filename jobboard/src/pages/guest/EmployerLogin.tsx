@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { useAuthStore } from '../stores/authStore';
+import { useAuthStore } from '../../stores/authStore';
 
 const loginSchema = z.object({
   email: z.string().min(1, 'The Email field is required').email('Enter a valid email'),
@@ -19,7 +19,7 @@ const inputClass = (hasError?: boolean) =>
    text-ink text-sm rounded-xl px-4 py-3 outline-none focus:border-evergreen
    transition-colors placeholder-ink/40`;
 
-const ApplicantLogin = () => {
+const EmployerLogin = () => {
   const navigate = useNavigate();
   const login = useAuthStore((s) => s.login);
 
@@ -37,7 +37,7 @@ const ApplicantLogin = () => {
     setIsPending(true);
     try {
       const user = await login(data);
-      navigate(user.role === 'employer' ? '/employers/dashboard' : '/');
+      navigate(user.role === 'applicant' ? '/' : '/employers/dashboard');
     } catch (err: any) {
       setServerError(err?.response?.data?.message || 'Invalid email or password');
     } finally {
@@ -47,7 +47,12 @@ const ApplicantLogin = () => {
 
   return (
     <div className="max-w-md mx-auto px-4 sm:px-6 py-12">
-      <h1 className="text-3xl font-bold text-ink mb-8">Applicants Login</h1>
+      <div className="flex items-start justify-between mb-8">
+        <h1 className="text-3xl font-bold text-ink">Employers Login</h1>
+        {/* <Link to="/applicants" className="text-sm font-medium text-evergreen hover:text-evergreen-dark whitespace-nowrap">
+          Post a Resume
+        </Link> */}
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
@@ -89,7 +94,7 @@ const ApplicantLogin = () => {
               className="w-4 h-4 rounded border-hairline text-evergreen focus:ring-evergreen accent-evergreen" />
             Keep Me Logged In
           </label>
-          <Link to="/applicants/forgot-password" className="text-sm font-medium text-evergreen hover:text-evergreen-dark">
+          <Link to="/employers/forgot-password" className="text-sm font-medium text-evergreen hover:text-evergreen-dark">
             Forgot Password
           </Link>
         </div>
@@ -100,15 +105,20 @@ const ApplicantLogin = () => {
           </div>
         )}
 
-        <button type="submit" disabled={isPending}
-          className="w-full bg-evergreen hover:bg-evergreen-dark disabled:opacity-50
-                     text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2">
-          {isPending ? 'Logging in...' : <>Log In →</>}
-        </button>
+        <div className="flex items-center justify-between pt-1">
+          <Link to="/post" className="text-sm font-medium text-evergreen hover:text-evergreen-dark">
+            Post a Job Instead
+          </Link>
+          <button type="submit" disabled={isPending}
+            className="bg-evergreen hover:bg-evergreen-dark disabled:opacity-50
+                       text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shrink-0">
+            {isPending ? 'Logging in...' : <>Log In →</>}
+          </button>
+        </div>
 
         <p className="text-center text-sm text-ink/60">
           Don't have an account?{' '}
-          <Link to="/applicants/signup" className="font-medium text-evergreen hover:text-evergreen-dark">
+          <Link to="/employers/signup" className="font-medium text-evergreen hover:text-evergreen-dark">
             Sign up
           </Link>
         </p>
@@ -117,4 +127,4 @@ const ApplicantLogin = () => {
   );
 };
 
-export default ApplicantLogin;
+export default EmployerLogin;

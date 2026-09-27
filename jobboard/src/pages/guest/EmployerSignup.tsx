@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AlertCircle, Image as ImageIcon } from 'lucide-react';
-import { useAuthStore } from '../stores/authStore';
+import { useAuthStore } from '../../stores/authStore';
 
 const MAX_LOGO_BYTES = 900 * 1024; // 900kb
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];

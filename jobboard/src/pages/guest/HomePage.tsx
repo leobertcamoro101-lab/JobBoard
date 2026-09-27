@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getJobs } from '../api/client';
-import type { JobFilters } from '../types';
-import JobCard from '../components/JobCard';
-import SearchFilters from '../components/SearchFilters';
+import { getJobs } from '../../api/client';
+import type { JobFilters } from '../../types';
+import JobCard from '../../components/JobCard';
+import SearchFilters from '../../components/SearchFilters';
 
 const HomePage = () => {
   const [filters, setFilters] = useState<JobFilters>({});
