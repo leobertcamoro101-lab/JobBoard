@@ -24,20 +24,40 @@ class ApplicationController extends Controller
             );
         }
 
-        $data = $request->validate([
-            'name'         => 'required|string|max:255',
-            'email'        => 'required|email',
+        // Logged-in applicants apply as themselves; everyone else applies as a guest
+        $user = $request->user('sanctum');
+        $isApplicant = $user && $user->role === 'applicant';
+
+        $rules = [
             'cover_letter' => 'required|string|min:100',
             'phone'        => 'nullable|string',
             'linkedin'     => 'nullable|url',
             'portfolio'    => 'nullable|url',
-        ]);
+        ];
 
-        $exists = Application::where('job_id', $job->id)
-            ->where('email', $data['email'])
+        if (! $isApplicant) {
+            $rules['name'] = 'required|string|max:255';
+            $rules['email'] = 'required|email';
+        }
+
+        $data = $request->validate($rules);
+
+        if ($isApplicant) {
+            // Always trust the account, never the request body
+            $data['name'] = $user->name;
+            $data['email'] = $user->email;
+        }
+
+        $duplicate = Application::where('job_id', $job->id)
+            ->where(function ($q) use ($data, $isApplicant, $user) {
+                $q->where('email', $data['email']);
+                if ($isApplicant) {
+                    $q->orWhere('user_id', $user->id);
+                }
+            })
             ->exists();
 
-        if ($exists) {
+        if ($duplicate) {
             return response()->json(
                 ['message' => 'You have already applied for this job'],
                 422
@@ -47,7 +67,7 @@ class ApplicationController extends Controller
         $application = Application::create([
             ...$data,
             'job_id' => $job->id,
-            'user_id' => $request->user('sanctum')?->id,
+            'user_id' => $isApplicant ? $user->id : null,
             'status' => 'pending',
         ]);
 
