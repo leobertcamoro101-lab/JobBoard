@@ -1,6 +1,18 @@
 export type UserRole = 'applicant' | 'employer';
 export type ApplicationStatus = 'pending' | 'reviewed' | 'accepted' | 'rejected';
 
+export interface EmployerApplication {
+  id: number;
+  name: string;
+  email: string;
+  phone: string | null;
+  linkedin: string | null;
+  portfolio: string | null;
+  cover_letter: string;
+  status: ApplicationStatus;
+  created_at: string;
+  resume_url: string | null;
+}
 export interface Application {
   id: number;
   job_id: number;
@@ -102,6 +114,7 @@ export interface Job {
   applications_count?: number;
   created_at: string;
   updated_at: string;
+  is_active: boolean;
 }
 
 export interface JobFilters {

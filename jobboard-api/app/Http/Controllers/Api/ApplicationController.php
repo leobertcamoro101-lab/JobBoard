@@ -9,8 +9,21 @@ use Illuminate\Http\Request;
 
 class ApplicationController extends Controller
 {
+    private function ownsJob(Request $request, Job $job): bool
+    {
+        return $job->employer_id !== null
+            && (int) $job->employer_id === (int) $request->user()->id;
+    }
+
     public function store(Request $request, Job $job)
     {
+        if (! $job->is_active) {
+            return response()->json(
+                ['message' => 'This job is no longer accepting applications'],
+                422
+            );
+        }
+
         $data = $request->validate([
             'name'         => 'required|string|max:255',
             'email'        => 'required|email',
@@ -34,18 +47,60 @@ class ApplicationController extends Controller
         $application = Application::create([
             ...$data,
             'job_id' => $job->id,
-            'user_id' => $request->user()?->id,
+            'user_id' => $request->user('sanctum')?->id,
             'status' => 'pending',
         ]);
 
         return response()->json($application, 201);
     }
 
-    public function index(Job $job)
+    // Employer only: applicants for one of their own jobs
+    public function index(Request $request, Job $job)
     {
-        return response()->json(
-            $job->applications()->orderBy('created_at', 'desc')->get()
-        );
+        if (! $this->ownsJob($request, $job)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return $job->applications()
+            ->with('user.applicantProfile')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($app) {
+                $profile = $app->user?->applicantProfile;
+
+                return [
+                    'id' => $app->id,
+                    'name' => $app->name,
+                    'email' => $app->email,
+                    'phone' => $app->phone,
+                    'linkedin' => $app->linkedin,
+                    'portfolio' => $app->portfolio,
+                    'cover_letter' => $app->cover_letter,
+                    'status' => $app->status,
+                    'created_at' => $app->created_at,
+                    // Only shared when the applicant ticked "Allow companies to view my resume"
+                    'resume_url' => ($profile && $profile->allow_view) ? $profile->resume_url : null,
+                ];
+            });
+    }
+
+    // Employer only: move an application to reviewed / accepted / rejected
+    public function updateStatus(Request $request, Application $application)
+    {
+        if (! $this->ownsJob($request, $application->job)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $data = $request->validate([
+            'status' => 'required|in:pending,reviewed,accepted,rejected',
+        ]);
+
+        $application->update($data);
+
+        return response()->json([
+            'id' => $application->id,
+            'status' => $application->status,
+        ]);
     }
 
     public function myApplications(Request $request)

@@ -3,12 +3,14 @@ import { persist } from 'zustand/middleware';
 import {
   login as apiLogin,
   logout as apiLogout,
+  getMe as apiGetMe,
   registerApplicant as apiRegisterApplicant,
   confirmApplicantSignup as apiConfirmApplicantSignup,
   registerEmployer as apiRegisterEmployer,
   confirmEmployerSignup as apiConfirmEmployerSignup,
   resendConfirmationCode as apiResendCode,
 } from '../api/client';
+import { setUnauthorizedHandler } from '../api/auth-bridge';
 import type {
   User, LoginPayload, ApplicantRegisterPayload, EmployerRegisterPayload,
   ConfirmSignupPayload, ResendCodePayload,
@@ -21,6 +23,7 @@ interface AuthState {
 
   login: (credentials: LoginPayload) => Promise<User>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 
   registerApplicant: (data: ApplicantRegisterPayload) => Promise<{ email: string }>;
   confirmApplicantSignup: (data: ConfirmSignupPayload) => Promise<User>;
@@ -49,6 +52,12 @@ export const useAuthStore = create<AuthState>()(
         try { await apiLogout(); } catch { /* ignore */ }
         localStorage.removeItem('token');
         set({ user: null, token: null, isAuthenticated: false });
+      },
+
+      // Re-fetch the current user (with profile) so persisted data never goes stale
+      refreshUser: async () => {
+        const { data } = await apiGetMe();
+        set({ user: data });
       },
 
       // Step 1 doesn't authenticate — account isn't verified yet
@@ -91,3 +100,9 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
+
+// When any API call comes back 401 with a token, wipe in-memory auth state
+// so the Navbar and ProtectedRoute react immediately, not on the next reload.
+setUnauthorizedHandler(() => {
+  useAuthStore.setState({ user: null, token: null, isAuthenticated: false });
+});

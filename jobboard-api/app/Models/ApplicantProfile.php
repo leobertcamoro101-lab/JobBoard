@@ -9,6 +9,8 @@ class ApplicantProfile extends Model
 {
     protected $fillable = ['user_id', 'resume_path', 'allow_view'];
 
+    protected $appends = ['resume_url'];
+
     protected function casts(): array
     {
         return ['allow_view' => 'boolean'];

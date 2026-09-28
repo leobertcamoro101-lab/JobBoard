@@ -40,6 +40,25 @@ const Navbar = () => {
 
   const dashboardPath = user?.role === 'employer' ? '/employers/dashboard' : '/applicants/dashboard';
 
+  // Logged-out visitors and employers can post; logged-in applicants can't
+  const canPostJob = !isAuthenticated || user?.role === 'employer';
+
+  const postJobDesktop = (
+    <Link to="/post"
+      className="bg-evergreen hover:bg-evergreen-dark text-white text-sm
+                 font-bold px-4 py-2 rounded-xl transition-colors">
+      + Post a Job
+    </Link>
+  );
+
+  const postJobMobile = (
+    <Link to="/post" onClick={closeAll}
+      className="block text-center bg-evergreen hover:bg-evergreen-dark text-white text-sm
+                 font-bold px-4 py-2.5 rounded-xl transition-colors mt-2">
+      + Post a Job
+    </Link>
+  );
+
   return (
     <nav className="bg-white/90 backdrop-blur-md border-b border-hairline sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
@@ -61,11 +80,7 @@ const Navbar = () => {
                 }`}>
                 Browse Jobs
               </Link>
-              <Link to="/post"
-                className="bg-evergreen hover:bg-evergreen-dark text-white text-sm
-                           font-bold px-4 py-2 rounded-xl transition-colors">
-                + Post a Job
-              </Link>
+              {canPostJob && postJobDesktop}
 
               <div className="relative" ref={userRef}>
                 <button
@@ -154,11 +169,7 @@ const Navbar = () => {
                 }`}>
                 Browse Jobs
               </Link>
-              <Link to="/post"
-                className="bg-evergreen hover:bg-evergreen-dark text-white text-sm
-                           font-bold px-4 py-2 rounded-xl transition-colors">
-                + Post a Job
-              </Link>
+              {canPostJob && postJobDesktop}
             </>
           )}
         </div>
@@ -198,11 +209,7 @@ const Navbar = () => {
                 className="flex items-center gap-2 px-2 py-2.5 text-sm font-medium text-ink/60 hover:bg-gray-50 rounded-lg">
                 <UserIcon size={16} /> Dashboard
               </Link>
-              <Link to="/post" onClick={closeAll}
-                className="block text-center bg-evergreen hover:bg-evergreen-dark text-white text-sm
-                           font-bold px-4 py-2.5 rounded-xl transition-colors mt-2">
-                + Post a Job
-              </Link>
+              {canPostJob && postJobMobile}
               <button onClick={handleLogout}
                 className="w-full flex items-center gap-2 px-2 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg mt-1">
                 <LogOut size={16} /> Log Out
@@ -232,11 +239,7 @@ const Navbar = () => {
                 className="flex items-center gap-2 px-2 py-2.5 text-sm font-medium text-evergreen hover:bg-gray-50 rounded-lg">
                 <Briefcase size={16} /> Sign Up as Employer
               </Link>
-              <Link to="/post" onClick={closeAll}
-                className="block text-center bg-evergreen hover:bg-evergreen-dark text-white text-sm
-                           font-bold px-4 py-2.5 rounded-xl transition-colors mt-2">
-                + Post a Job
-              </Link>
+              {canPostJob && postJobMobile}
             </>
           )}
         </div>

@@ -10,6 +10,7 @@ import ApplicantSignup from "../pages/guest/ApplicantSignup";
 import EmployerSignup from "../pages/guest/EmployerSignup";
 import ApplicantDashboard from "../pages/authenticated/ApplicantDashboard";
 import EmployerDashboard from "../pages/authenticated/EmployerDashboard";
+import JobApplicantsPage from "../pages/authenticated/JobApplicantsPage";
 
 const router = createBrowserRouter([
   {
@@ -17,7 +18,6 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <HomePage /> },
       { path: '/jobs/:id', element: <JobDetailPage /> },
-      { path: '/post', element: <PostJobPage /> },
       { path: '/applicants', element: <ApplicantLogin /> },
       { path: '/employers', element: <EmployerLogin /> },
       { path: '/applicants/signup', element: <ApplicantSignup /> },
@@ -40,7 +40,19 @@ const router = createBrowserRouter([
       },
       {
         path: '/post',
-        element: <ProtectedRoute role="employer"><PostJobPage /></ProtectedRoute>,
+        element: (
+          <ProtectedRoute role="employer">
+            <PostJobPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/employers/jobs/:id/applicants',
+        element: (
+          <ProtectedRoute role="employer">
+            <JobApplicantsPage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

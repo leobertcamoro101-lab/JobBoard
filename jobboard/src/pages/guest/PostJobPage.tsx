@@ -1,9 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation } from '@tanstack/react-query';
-import { createJob } from '../../api/client';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { createJob, getJob, updateJob } from '../../api/client';
+import { useAuthStore } from '../../stores/authStore';
 
 const postJobSchema = z.object({
   title: z.string().min(3, 'Job title is required'),
@@ -25,22 +27,59 @@ const CATEGORIES = ['Engineering', 'Design', 'DevOps', 'Marketing', 'Sales', 'Pr
 
 const PostJobPage = () => {
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors } } = useForm<PostJobForm>({
-    resolver: zodResolver(postJobSchema) as any,
-    defaultValues: { 
-      type: 'full-time', 
-      currency: 'PHP', 
-      category: 'Engineering', 
-      title: '', 
-      company: '', 
-      location: '', 
-      description: '', 
-      apply_email: '' },
+  const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
+
+  const { id } = useParams<{ id: string }>();
+  const isEdit = !!id;
+  const jobId = Number(id);
+
+  const { data: job, isLoading: jobLoading, error: jobError } = useQuery({
+    queryKey: ['job', id],
+    queryFn: () => getJob(jobId),
+    enabled: isEdit,
   });
 
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<PostJobForm>({
+    resolver: zodResolver(postJobSchema) as any,
+    defaultValues: {
+      type: 'full-time',
+      currency: 'PHP',
+      category: 'Engineering',
+      title: '',
+      company: user?.employer_profile?.company_name ?? '',
+      location: '',
+      description: '',
+      apply_email: user?.email ?? '',
+    },
+  });
+
+  // Edit mode: fill the form once the job loads
+  useEffect(() => {
+    if (!job) return;
+    reset({
+      title: job.title,
+      company: job.company,
+      location: job.location,
+      type: job.type,
+      category: job.category,
+      salary_min: job.salary_min ? String(Number(job.salary_min)) : '',
+      salary_max: job.salary_max ? String(Number(job.salary_max)) : '',
+      currency: job.currency || 'PHP',
+      description: job.description,
+      requirements: job.requirements ?? '',
+      apply_email: job.apply_email,
+    });
+  }, [job, reset]);
+
   const mutation = useMutation({
-    mutationFn: createJob,
-    onSuccess: (job) => navigate(`/jobs/${job.id}`),
+    mutationFn: (data: PostJobForm) => (isEdit ? updateJob(jobId, data) : createJob(data)),
+    onSuccess: (saved) => {
+      queryClient.invalidateQueries({ queryKey: ['employer-jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['job'] });
+      navigate(isEdit ? '/employers/dashboard' : `/jobs/${saved.id}`);
+    },
   });
 
   const inputClass = (hasError?: boolean) =>
@@ -48,15 +87,51 @@ const PostJobPage = () => {
      text-ink text-sm rounded-xl px-4 py-3 outline-none focus:border-evergreen
      transition-colors placeholder-ink/40`;
 
+  if (isEdit && jobLoading) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 animate-pulse space-y-4">
+        <div className="h-8 bg-hairline/60 rounded w-1/2" />
+        <div className="h-64 bg-hairline/40 rounded-2xl" />
+      </div>
+    );
+  }
+
+  if (isEdit && (jobError || !job)) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+        <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 text-sm">
+          ⚠️ Job not found.
+        </div>
+      </div>
+    );
+  }
+
+  if (isEdit && job && Number(job.employer_id) !== user?.id) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+        <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 text-sm">
+          ⚠️ You can only edit jobs that you posted.
+        </div>
+      </div>
+    );
+  }
+
+  const categoryOptions =
+    job && !CATEGORIES.includes(job.category) ? [job.category, ...CATEGORIES] : CATEGORIES;
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-ink mb-2">Post a Job</h1>
-        <p className="text-ink/60">Find your next great hire</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-ink mb-2">
+          {isEdit ? 'Edit Job' : 'Post a Job'}
+        </h1>
+        <p className="text-ink/60">
+          {isEdit ? 'Update the details of your posting' : 'Find your next great hire'}
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit(d => mutation.mutate(d))} className="space-y-5">
-        <div className="bg-white border border-hairline rounded-2xl p-6 space-y-4">
+      <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5">
+        <div className="bg-white border border-hairline rounded-2xl p-5 sm:p-6 space-y-4">
           <h2 className="text-ink font-bold">Job Details</h2>
 
           <div>
@@ -94,15 +169,15 @@ const PostJobPage = () => {
             <div>
               <label className="text-xs text-ink/60 mb-1 block">Category *</label>
               <select {...register('category')} className={inputClass()}>
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                {categoryOptions.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
           </div>
         </div>
 
-        <div className="bg-white border border-hairline rounded-2xl p-6 space-y-4">
+        <div className="bg-white border border-hairline rounded-2xl p-5 sm:p-6 space-y-4">
           <h2 className="text-ink font-bold">Salary (Optional)</h2>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="text-xs text-ink/60 mb-1 block">Currency</label>
               <select {...register('currency')} className={inputClass()}>
@@ -113,18 +188,16 @@ const PostJobPage = () => {
             </div>
             <div>
               <label className="text-xs text-ink/60 mb-1 block">Min Salary</label>
-              <input {...register('salary_min')} placeholder="e.g. 50000"
-                className={inputClass()} />
+              <input {...register('salary_min')} placeholder="e.g. 50000" className={inputClass()} />
             </div>
             <div>
               <label className="text-xs text-ink/60 mb-1 block">Max Salary</label>
-              <input {...register('salary_max')} placeholder="e.g. 80000"
-                className={inputClass()} />
+              <input {...register('salary_max')} placeholder="e.g. 80000" className={inputClass()} />
             </div>
           </div>
         </div>
 
-        <div className="bg-white border border-hairline rounded-2xl p-6 space-y-4">
+        <div className="bg-white border border-hairline rounded-2xl p-5 sm:p-6 space-y-4">
           <h2 className="text-ink font-bold">Description</h2>
           <div>
             <label className="text-xs text-ink/60 mb-1 block">Job Description *</label>
@@ -143,7 +216,7 @@ const PostJobPage = () => {
           </div>
         </div>
 
-        <div className="bg-white border border-hairline rounded-2xl p-6">
+        <div className="bg-white border border-hairline rounded-2xl p-5 sm:p-6">
           <h2 className="text-ink font-bold mb-4">Contact</h2>
           <div>
             <label className="text-xs text-ink/60 mb-1 block">Application Email *</label>
@@ -155,15 +228,27 @@ const PostJobPage = () => {
 
         {mutation.error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl px-4 py-3 text-sm">
-            ⚠️ Failed to post job. Please try again.
+            ⚠️ {(mutation.error as any)?.response?.data?.message ||
+              (isEdit ? 'Failed to save changes. Please try again.' : 'Failed to post job. Please try again.')}
           </div>
         )}
 
-        <button type="submit" disabled={mutation.isPending}
-          className="w-full bg-evergreen hover:bg-evergreen-dark disabled:opacity-50
-                     text-white font-bold py-4 rounded-2xl transition-colors text-lg">
-          {mutation.isPending ? 'Posting...' : 'Post Job →'}
-        </button>
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center gap-3">
+          {isEdit && (
+            <Link to="/employers/dashboard"
+              className="text-center px-6 py-4 rounded-2xl border border-hairline text-ink/70
+                         font-medium hover:bg-paper transition-colors">
+              Cancel
+            </Link>
+          )}
+          <button type="submit" disabled={mutation.isPending}
+            className="flex-1 bg-evergreen hover:bg-evergreen-dark disabled:opacity-50
+                       text-white font-bold py-4 rounded-2xl transition-colors text-lg">
+            {mutation.isPending
+              ? (isEdit ? 'Saving...' : 'Posting...')
+              : (isEdit ? 'Save Changes →' : 'Post Job →')}
+          </button>
+        </div>
       </form>
     </div>
   );

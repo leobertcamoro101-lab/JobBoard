@@ -5,9 +5,16 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Job;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class JobController extends Controller
 {
+    private function ownsJob(Request $request, Job $job): bool
+    {
+        return $job->employer_id !== null
+            && (int) $job->employer_id === (int) $request->user()->id;
+    }
+
     public function index(Request $request)
     {
         $query = Job::withCount('applications')->where('is_active', true);
@@ -31,9 +38,7 @@ class JobController extends Controller
             $query->where('location', 'ilike', "%{$request->location}%");
         }
 
-        $jobs = $query->orderBy('created_at', 'desc')->get();
-
-        return response()->json($jobs);
+        return response()->json($query->orderBy('created_at', 'desc')->get());
     }
 
     public function store(Request $request)
@@ -55,21 +60,17 @@ class JobController extends Controller
         $data['employer_id'] = $request->user()->id;
         $data['is_active'] = true;
 
-        $job = Job::create($data);
-
-        return response()->json($job, 201);
+        return response()->json(Job::create($data), 201);
     }
 
     public function show(Job $job)
     {
-        return response()->json(
-            $job->loadCount('applications')
-        );
+        return response()->json($job->loadCount('applications'));
     }
 
     public function update(Request $request, Job $job)
     {
-        if ($job->employer_id !== $request->user()->id) {
+        if (! $this->ownsJob($request, $job)) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -95,11 +96,14 @@ class JobController extends Controller
 
     public function destroy(Request $request, Job $job)
     {
-        if ($job->employer_id !== $request->user()->id) {
+        if (! $this->ownsJob($request, $job)) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $job->delete();
+        DB::transaction(function () use ($job) {
+            $job->applications()->delete();
+            $job->delete();
+        });
 
         return response()->json(['message' => 'Job deleted']);
     }

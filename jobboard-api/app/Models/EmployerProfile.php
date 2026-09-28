@@ -9,6 +9,8 @@ class EmployerProfile extends Model
 {
     protected $fillable = ['user_id', 'company_name', 'company_website', 'company_logo_path'];
 
+    protected $appends = ['company_logo_url'];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '../../stores/authStore';
 import { getMyApplications } from '../../api/client';
@@ -12,6 +13,11 @@ const STATUS_STYLES: Record<string, string> = {
 
 const ApplicantDashboard = () => {
   const user = useAuthStore((s) => s.user);
+  const refreshUser = useAuthStore((s) => s.refreshUser);
+
+  useEffect(() => {
+    refreshUser().catch(() => { /* 401s are handled by the client interceptor */ });
+  }, [refreshUser]);
 
   const { data: applications = [], isLoading } = useQuery({
     queryKey: ['my-applications'],
@@ -19,6 +25,7 @@ const ApplicantDashboard = () => {
   });
 
   const pendingCount = applications.filter((a) => a.status === 'pending').length;
+  const resumeUrl = user?.applicant_profile?.resume_url;
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
@@ -46,9 +53,14 @@ const ApplicantDashboard = () => {
           <div className="flex items-center gap-2 text-ink/50 text-sm mb-2">
             <FileText size={16} /> Resume Status
           </div>
-          <p className="text-sm font-medium text-evergreen">
-            {user?.applicant_profile?.resume_url ? 'Uploaded' : 'Not uploaded'}
-          </p>
+          {resumeUrl ? (
+            <a href={resumeUrl} target="_blank" rel="noopener noreferrer"
+              className="text-sm font-medium text-evergreen hover:text-evergreen-dark underline underline-offset-2">
+              Uploaded · View resume
+            </a>
+          ) : (
+            <p className="text-sm font-medium text-ink/50">Not uploaded</p>
+          )}
         </div>
       </div>
 

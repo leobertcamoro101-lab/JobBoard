@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, type Location } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
+import { getPostLoginTarget } from '../../utils/authRedirect';
 
 const loginSchema = z.object({
   email: z.string().min(1, 'The Email field is required').email('Enter a valid email'),
@@ -21,6 +22,8 @@ const inputClass = (hasError?: boolean) =>
 
 const EmployerLogin = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: Location } | null)?.from;
   const login = useAuthStore((s) => s.login);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +40,7 @@ const EmployerLogin = () => {
     setIsPending(true);
     try {
       const user = await login(data);
-      navigate(user.role === 'applicant' ? '/' : '/employers/dashboard');
+      navigate(getPostLoginTarget(user, from), { replace: true });
     } catch (err: any) {
       setServerError(err?.response?.data?.message || 'Invalid email or password');
     } finally {
@@ -49,9 +52,9 @@ const EmployerLogin = () => {
     <div className="max-w-md mx-auto px-4 sm:px-6 py-12">
       <div className="flex items-start justify-between mb-8">
         <h1 className="text-3xl font-bold text-ink">Employers Login</h1>
-        {/* <Link to="/applicants" className="text-sm font-medium text-evergreen hover:text-evergreen-dark whitespace-nowrap">
+        <Link to="/applicants" className="text-sm font-medium text-evergreen hover:text-evergreen-dark whitespace-nowrap">
           Post a Resume
-        </Link> */}
+        </Link>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">

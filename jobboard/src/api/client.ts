@@ -1,5 +1,6 @@
 import axios, { type AxiosResponse } from 'axios';
-import type { Application, EmployerJob } from '../types';
+import type { Application, EmployerJob, EmployerApplication, ApplicationStatus } from '../types';
+import { notifyUnauthorized } from './auth-bridge';
 
 import type {
   User, LoginPayload, ApplicantRegisterPayload, EmployerRegisterPayload,
@@ -18,16 +19,30 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// api.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     // Token missing/expired/revoked — clear stale auth state.
+//     // JobBoard has two login pages (applicant/employer), so unlike a single
+//     // /login redirect, we just clear state and let the current page's guard
+//     // (or the user) decide where to go next.
+//     if (error.response?.status === 401) {
+//       localStorage.removeItem('token');
+//       localStorage.removeItem('auth-storage');
+//     }
+//     return Promise.reject(error);
+//   },
+// );
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Token missing/expired/revoked — clear stale auth state.
-    // JobBoard has two login pages (applicant/employer), so unlike a single
-    // /login redirect, we just clear state and let the current page's guard
-    // (or the user) decide where to go next.
-    if (error.response?.status === 401) {
+    // Only treat a 401 as "session expired" if we actually sent a token.
+    // (Bad-credential logins return 422 from Laravel, so they never reach this.)
+    if (error.response?.status === 401 && localStorage.getItem('token')) {
       localStorage.removeItem('token');
       localStorage.removeItem('auth-storage');
+      notifyUnauthorized();
     }
     return Promise.reject(error);
   },
@@ -92,11 +107,13 @@ export const getEmployerJobs = (): Promise<EmployerJob[]> =>
   api.get('/employer/jobs').then((res) => res.data);
 
 // Jobs
+
 // export const getJobs = (params?: JobFilters): Promise<AxiosResponse<Job[]>> => api.get('/jobs', { params });
 // export const getJob = (id: number): Promise<AxiosResponse<Job>> => api.get(`/jobs/${id}`);
 // export const createJob = (data: Partial<Job>): Promise<AxiosResponse<Job>> => api.post('/jobs', data).then(r => r.data);
 // export const applyForJob = (jobId: number, data: unknown): Promise<AxiosResponse<MessageResponse>> =>
 //   api.post(`/jobs/${jobId}/apply`, data);
+
 // Jobs
 export const getJobs = (params?: JobFilters): Promise<Job[]> =>
   api.get('/jobs', { params }).then((res) => res.data);
@@ -109,5 +126,19 @@ export const createJob = (data: Partial<Job>): Promise<Job> =>
 
 export const applyForJob = (jobId: number, data: unknown): Promise<{ message: string }> =>
   api.post(`/jobs/${jobId}/apply`, data).then((res) => res.data);
+export const updateJob = (id: number, data: Partial<Job>): Promise<Job> =>
+  api.put(`/jobs/${id}`, data).then((res) => res.data);
+
+export const deleteJob = (id: number): Promise<{ message: string }> =>
+  api.delete(`/jobs/${id}`).then((res) => res.data);
+
+export const getJobApplications = (jobId: number): Promise<EmployerApplication[]> =>
+  api.get(`/jobs/${jobId}/applications`).then((res) => res.data);
+
+export const updateApplicationStatus = (
+  id: number,
+  status: ApplicationStatus
+): Promise<{ id: number; status: ApplicationStatus }> =>
+  api.patch(`/applications/${id}`, { status }).then((res) => res.data);
 
 export default api;

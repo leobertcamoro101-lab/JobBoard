@@ -111,7 +111,7 @@ const JobDetailPage = () => {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-4">
+        {/* <div className="space-y-4">
           <div className="bg-white border border-hairline rounded-2xl p-5 sticky top-24">
             <button
               onClick={() => setShowApply(true)}
@@ -123,6 +123,25 @@ const JobDetailPage = () => {
               Applications sent to {job.apply_email}
             </p>
           </div>
+        </div> */}
+        <div className="bg-white border border-hairline rounded-2xl p-5 sticky top-24">
+          {job.is_active === false ? (
+            <p className="text-center text-sm font-medium text-ink/50 py-2">
+              This job is no longer accepting applications.
+            </p>
+          ) : (
+            <>
+              <button
+                onClick={() => setShowApply(true)}
+                className="w-full bg-evergreen hover:bg-evergreen-dark text-white font-bold
+                          py-3 rounded-xl transition-colors mb-3">
+                Apply Now →
+              </button>
+              <p className="text-ink/40 text-xs text-center">
+                Applications sent to {job.apply_email}
+              </p>
+            </>
+          )}
         </div>
       </div>
 
