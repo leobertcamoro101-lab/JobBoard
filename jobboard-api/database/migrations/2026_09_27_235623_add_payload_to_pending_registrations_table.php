@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('job_listings', function (Blueprint $table) {
-            $table->foreignId('employer_id')->nullable()->after('id')->constrained('users')->nullOnDelete();
+        Schema::table('pending_registrations', function (Blueprint $table) {
+            $table->json('payload')->nullable()->after('code');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('job_listings', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('employer_id');
+        Schema::table('pending_registrations', function (Blueprint $table) {
+            $table->dropColumn('payload');
         });
     }
 };

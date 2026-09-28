@@ -11,7 +11,7 @@ class ApplicationController extends Controller
 {
     public function store(Request $request, Job $job)
     {
-        $request->validate([
+        $data = $request->validate([
             'name'         => 'required|string|max:255',
             'email'        => 'required|email',
             'cover_letter' => 'required|string|min:100',
@@ -20,9 +20,8 @@ class ApplicationController extends Controller
             'portfolio'    => 'nullable|url',
         ]);
 
-        // Check for duplicate application
         $exists = Application::where('job_id', $job->id)
-            ->where('email', $request->email)
+            ->where('email', $data['email'])
             ->exists();
 
         if ($exists) {
@@ -33,8 +32,10 @@ class ApplicationController extends Controller
         }
 
         $application = Application::create([
-            ...$request->all(),
+            ...$data,
             'job_id' => $job->id,
+            'user_id' => $request->user()?->id,
+            'status' => 'pending',
         ]);
 
         return response()->json($application, 201);
@@ -47,20 +48,20 @@ class ApplicationController extends Controller
         );
     }
 
-		public function myApplications(Request $request)
-		{
-				return $request->user()
-						->applications() // hasMany relationship on User
-						->with('job:id,title,company')
-						->latest()
-						->get()
-						->map(fn ($app) => [
-								'id' => $app->id,
-								'job_id' => $app->job_id,
-								'job_title' => $app->job->title,
-								'company' => $app->job->company,
-								'status' => $app->status,
-								'created_at' => $app->created_at,
-						]);
-		}
+    public function myApplications(Request $request)
+    {
+        return $request->user()
+            ->applications()
+            ->with('job:id,title,company')
+            ->latest()
+            ->get()
+            ->map(fn ($app) => [
+                'id' => $app->id,
+                'job_id' => $app->job_id,
+                'job_title' => $app->job->title,
+                'company' => $app->job->company,
+                'status' => $app->status,
+                'created_at' => $app->created_at,
+            ]);
+    }
 }

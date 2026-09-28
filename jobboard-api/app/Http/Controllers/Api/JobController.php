@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class JobController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $query = Job::withCount('applications')->where('is_active', true);
@@ -39,29 +36,30 @@ class JobController extends Controller
         return response()->json($jobs);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $request->validate([
-            'title'       => 'required|string|max:255',
-            'company'     => 'required|string|max:255',
-            'location'    => 'required|string|max:255',
-            'type'        => 'required|in:full-time,part-time,remote,contract',
-            'description' => 'required|string',
-            'apply_email' => 'required|email',
-            'category'    => 'required|string',
+        $data = $request->validate([
+            'title'        => 'required|string|max:255',
+            'company'      => 'required|string|max:255',
+            'location'     => 'required|string|max:255',
+            'type'         => 'required|in:full-time,part-time,remote,contract',
+            'description'  => 'required|string',
+            'apply_email'  => 'required|email',
+            'category'     => 'required|string',
+            'salary_min'   => 'nullable|numeric',
+            'salary_max'   => 'nullable|numeric',
+            'currency'     => 'nullable|string',
+            'requirements' => 'nullable|string',
         ]);
 
-        $job = Job::create($request->all());
+        $data['employer_id'] = $request->user()->id;
+        $data['is_active'] = true;
+
+        $job = Job::create($data);
 
         return response()->json($job, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Job $job)
     {
         return response()->json(
@@ -69,28 +67,47 @@ class JobController extends Controller
         );
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Job $job)
     {
-        $job->update($request->all());
+        if ($job->employer_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $data = $request->validate([
+            'title'        => 'sometimes|string|max:255',
+            'company'      => 'sometimes|string|max:255',
+            'location'     => 'sometimes|string|max:255',
+            'type'         => 'sometimes|in:full-time,part-time,remote,contract',
+            'description'  => 'sometimes|string',
+            'apply_email'  => 'sometimes|email',
+            'category'     => 'sometimes|string',
+            'salary_min'   => 'nullable|numeric',
+            'salary_max'   => 'nullable|numeric',
+            'currency'     => 'nullable|string',
+            'requirements' => 'nullable|string',
+            'is_active'    => 'sometimes|boolean',
+        ]);
+
+        $job->update($data);
+
         return response()->json($job);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Job $job)
+    public function destroy(Request $request, Job $job)
     {
+        if ($job->employer_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $job->delete();
+
         return response()->json(['message' => 'Job deleted']);
     }
 
     public function myJobs(Request $request)
     {
         return $request->user()
-            ->jobs() // hasMany relationship on User, via employer_id
+            ->jobs()
             ->withCount('applications as applicants_count')
             ->latest()
             ->get();
