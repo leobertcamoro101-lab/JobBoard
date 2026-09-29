@@ -47,6 +47,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: '/employers/jobs/:id/edit',
+        element: (
+          <ProtectedRoute role="employer">
+            <PostJobPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: '/employers/jobs/:id/applicants',
         element: (
           <ProtectedRoute role="employer">
