@@ -196,6 +196,13 @@ public function confirmApplicantRegistration(Request $request)
 
     public function login(Request $request)
     {
+        Log::info('LOGIN ATTEMPT', $request->all());
+
+        $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+        
         $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
