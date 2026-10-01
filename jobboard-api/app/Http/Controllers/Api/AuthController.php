@@ -194,32 +194,6 @@ public function confirmApplicantRegistration(Request $request)
 				return response()->json(['message' => 'Confirmation code resent']);
 		}
 
-    // public function login(Request $request)
-    // {
-    //     Log::info('LOGIN ATTEMPT', $request->all());
-
-    //     $request->validate([
-    //         'email' => ['required', 'email'],
-    //         'password' => ['required'],
-    //     ]);
-        
-    //     $request->validate([
-    //         'email' => ['required', 'email'],
-    //         'password' => ['required'],
-    //     ]);
-
-    //     if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-    //         throw ValidationException::withMessages(['email' => 'Invalid credentials']);
-    //     }
-
-    //     $user = Auth::user();
-    //     $user->load($user->role === 'employer' ? 'employerProfile' : 'applicantProfile');
-
-    //     $token = $user->createToken('auth')->plainTextToken;
-
-    //     return response()->json(['user' => $user, 'token' => $token]);
-    // }
-
     public function login(Request $request)
     {
         $request->validate([
@@ -227,27 +201,46 @@ public function confirmApplicantRegistration(Request $request)
             'password' => ['required'],
         ]);
 
-        $user = \App\Models\User::where('email', $request->email)->first();
-
-        \Log::info('LOGIN DEBUG', [
-            'email_received' => $request->email,
-            'user_found' => (bool) $user,
-            'user_id' => $user->id ?? null,
-            'hash_check' => $user ? \Hash::check($request->password, $user->password) : null,
-            'auth_attempt' => \Auth::attempt($request->only('email', 'password'), $request->boolean('remember')),
-        ]);
-
-        if (! \Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-            throw \Illuminate\Validation\ValidationException::withMessages(['email' => 'Invalid credentials']);
+        if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+            throw ValidationException::withMessages(['email' => 'Invalid credentials']);
         }
 
-        $user = \Auth::user();
+        $user = Auth::user();
         $user->load($user->role === 'employer' ? 'employerProfile' : 'applicantProfile');
 
         $token = $user->createToken('auth')->plainTextToken;
 
         return response()->json(['user' => $user, 'token' => $token]);
     }
+
+    // public function login(Request $request)
+    // {
+    //     $request->validate([
+    //         'email' => ['required', 'email'],
+    //         'password' => ['required'],
+    //     ]);
+
+    //     $user = \App\Models\User::where('email', $request->email)->first();
+
+    //     \Log::info('LOGIN DEBUG', [
+    //         'email_received' => $request->email,
+    //         'user_found' => (bool) $user,
+    //         'user_id' => $user->id ?? null,
+    //         'hash_check' => $user ? \Hash::check($request->password, $user->password) : null,
+    //         'auth_attempt' => \Auth::attempt($request->only('email', 'password'), $request->boolean('remember')),
+    //     ]);
+
+    //     if (! \Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+    //         throw \Illuminate\Validation\ValidationException::withMessages(['email' => 'Invalid credentials']);
+    //     }
+
+    //     $user = \Auth::user();
+    //     $user->load($user->role === 'employer' ? 'employerProfile' : 'applicantProfile');
+
+    //     $token = $user->createToken('auth')->plainTextToken;
+
+    //     return response()->json(['user' => $user, 'token' => $token]);
+    // }
 
     public function logout(Request $request)
     {
