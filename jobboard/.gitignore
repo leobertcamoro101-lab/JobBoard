@@ -26,3 +26,6 @@ dist-ssr
 
 # not deploy because of github error do this
 vercel --prod
+
+# dead code / component
+AppRoutes.tsx

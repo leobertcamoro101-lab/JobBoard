@@ -5,6 +5,7 @@ import { Briefcase, Users, Eye, Pencil, Lock, Unlock, Trash2 } from 'lucide-reac
 import { useAuthStore } from '../../stores/authStore';
 import { getEmployerJobs, updateJob, deleteJob } from '../../api/client';
 import type { EmployerJob } from '../../types';
+import Card from '../../components/Card';
 
 const actionBtn =
   'inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border border-hairline ' +
@@ -59,27 +60,27 @@ const EmployerDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white border border-hairline rounded-2xl p-5">
+        <Card >
           <div className="flex items-center gap-2 text-ink/50 text-sm mb-2">
             <Briefcase size={16} /> Active Job Posts
           </div>
           <p className="text-2xl font-bold text-ink">{activeCount}</p>
-        </div>
-        <div className="bg-white border border-hairline rounded-2xl p-5">
+        </Card>
+        <Card >
           <div className="flex items-center gap-2 text-ink/50 text-sm mb-2">
             <Users size={16} /> Total Applicants
           </div>
           <p className="text-2xl font-bold text-ink">{totalApplicants}</p>
-        </div>
-        <div className="bg-white border border-hairline rounded-2xl p-5">
+        </Card>
+        <Card >
           <div className="flex items-center gap-2 text-ink/50 text-sm mb-2">
             <Eye size={16} /> Profile Views
           </div>
           <p className="text-2xl font-bold text-ink">0</p>
-        </div>
+        </Card>
       </div>
 
-      <div className="bg-white border border-hairline rounded-2xl p-5 sm:p-6">
+      <Card>
         <h2 className="text-ink font-bold text-lg mb-4">Your Job Posts</h2>
 
         {toggleMutation.isError && (
@@ -155,7 +156,7 @@ const EmployerDashboard = () => {
             })}
           </div>
         )}
-      </div>
+      </Card>
 
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-sm"

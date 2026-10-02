@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { Job } from '../types';
+import Card from './Card';
 
 const TYPE_COLORS = {
   'full-time': 'bg-evergreen/10 text-evergreen border-evergreen/20',
@@ -24,9 +25,8 @@ const JobCard = ({ job }: { job: Job }) => {
   });
 
   return (
-    <Link to={`/jobs/${job.id}`}
-      className="block bg-white border border-hairline hover:border-evergreen/40
-                 hover:shadow-md rounded-2xl p-5 sm:p-6 transition-all group">
+    <Link to={`/jobs/${job.id}`}>
+      <Card className='block hover:border-evergreen/40 hover:shadow-md transition-all group'>
       <div className="flex items-start justify-between gap-3 mb-4">
         <div className="w-12 h-12 bg-evergreen/10 rounded-xl flex items-center justify-center
                         text-xl font-bold text-evergreen shrink-0">
@@ -67,6 +67,7 @@ const JobCard = ({ job }: { job: Job }) => {
           <span>{postedDate}</span>
         </div>
       </div>
+      </Card>
     </Link>
   );
 };
