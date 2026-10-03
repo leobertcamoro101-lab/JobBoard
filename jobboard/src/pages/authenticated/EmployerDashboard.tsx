@@ -6,6 +6,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { getEmployerJobs, updateJob, deleteJob } from '../../api/client';
 import type { EmployerJob } from '../../types';
 import Card from '../../components/Card';
+import Modal from '../../components/Modal';
 
 const actionBtn =
   'inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border border-hairline ' +
@@ -161,8 +162,7 @@ const EmployerDashboard = () => {
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-sm"
           onClick={() => setDeleteTarget(null)}>
-          <Card className="w-full max-w-sm p-6 shadow-xl"
-            onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}>
+          <Modal onClose={() => setDeleteTarget(null)} maxWidth="max-w-sm" cardClassName="p-6 max-h-none">
             <h3 className="text-ink font-bold text-lg mb-2">Delete this job?</h3>
             <p className="text-ink/60 text-sm mb-1 break-words">"{deleteTarget.title}"</p>
             <p className="text-ink/60 text-sm mb-5">
@@ -190,7 +190,7 @@ const EmployerDashboard = () => {
                 {deleteMutation.isPending ? 'Deleting...' : 'Delete job'}
               </button>
             </div>
-          </Card>
+          </Modal>
         </div>
       )}
     </div>
