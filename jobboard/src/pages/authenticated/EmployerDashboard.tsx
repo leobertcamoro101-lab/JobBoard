@@ -60,19 +60,19 @@ const EmployerDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <Card >
+        <Card className="p-5">
           <div className="flex items-center gap-2 text-ink/50 text-sm mb-2">
             <Briefcase size={16} /> Active Job Posts
           </div>
           <p className="text-2xl font-bold text-ink">{activeCount}</p>
         </Card>
-        <Card >
+        <Card className="p-5">
           <div className="flex items-center gap-2 text-ink/50 text-sm mb-2">
             <Users size={16} /> Total Applicants
           </div>
           <p className="text-2xl font-bold text-ink">{totalApplicants}</p>
         </Card>
-        <Card >
+        <Card className="p-5">
           <div className="flex items-center gap-2 text-ink/50 text-sm mb-2">
             <Eye size={16} /> Profile Views
           </div>
@@ -161,7 +161,7 @@ const EmployerDashboard = () => {
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-sm"
           onClick={() => setDeleteTarget(null)}>
-          <div className="bg-white border border-hairline rounded-2xl w-full max-w-sm p-6 shadow-xl"
+          <Card className="w-full max-w-sm p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}>
             <h3 className="text-ink font-bold text-lg mb-2">Delete this job?</h3>
             <p className="text-ink/60 text-sm mb-1 break-words">"{deleteTarget.title}"</p>
@@ -190,7 +190,7 @@ const EmployerDashboard = () => {
                 {deleteMutation.isPending ? 'Deleting...' : 'Delete job'}
               </button>
             </div>
-          </div>
+          </Card>
         </div>
       )}
     </div>

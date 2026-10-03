@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '../../stores/authStore';
 import { getMyApplications } from '../../api/client';
 import { FileText, Briefcase, Clock } from 'lucide-react';
+import Card from '../../components/Card';
 
 const STATUS_STYLES: Record<string, string> = {
   pending: 'bg-yellow-50 text-yellow-700 border-yellow-200',
@@ -37,19 +38,19 @@ const ApplicantDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white border border-hairline rounded-2xl p-5">
+        <Card>
           <div className="flex items-center gap-2 text-ink/50 text-sm mb-2">
             <Briefcase size={16} /> Applications Sent
           </div>
           <p className="text-2xl font-bold text-ink">{applications.length}</p>
-        </div>
-        <div className="bg-white border border-hairline rounded-2xl p-5">
+        </Card>
+        <Card>
           <div className="flex items-center gap-2 text-ink/50 text-sm mb-2">
             <Clock size={16} /> Pending Review
           </div>
           <p className="text-2xl font-bold text-ink">{pendingCount}</p>
-        </div>
-        <div className="bg-white border border-hairline rounded-2xl p-5">
+        </Card>
+        <Card>
           <div className="flex items-center gap-2 text-ink/50 text-sm mb-2">
             <FileText size={16} /> Resume Status
           </div>
@@ -61,10 +62,10 @@ const ApplicantDashboard = () => {
           ) : (
             <p className="text-sm font-medium text-ink/50">Not uploaded</p>
           )}
-        </div>
+        </Card>
       </div>
 
-      <div className="bg-white border border-hairline rounded-2xl p-6">
+      <Card>
         <h2 className="text-ink font-bold text-lg mb-4">Your Applications</h2>
 
         {isLoading && (
@@ -97,7 +98,7 @@ const ApplicantDashboard = () => {
             ))}
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 };

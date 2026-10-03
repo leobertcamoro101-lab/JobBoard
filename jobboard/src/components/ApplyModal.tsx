@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { applyForJob } from '../api/client';
 import { useAuthStore } from '../stores/authStore';
 import type { Job } from '../types';
+import Card from './Card';
 
 const optionalUrl = z.string().url('Must be a valid URL').optional().or(z.literal(''));
 
@@ -74,8 +75,7 @@ const ApplyModal = ({ job, onClose }: Props) => {
     <>
       <div className="fixed inset-0 bg-ink/40 backdrop-blur-sm z-50" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="bg-white border border-hairline rounded-2xl w-full max-w-lg
-                        max-h-[90vh] overflow-y-auto shadow-xl">
+        <Card className="max-h-[90vh] overflow-y-auto">
           <div className="p-5 sm:p-6 border-b border-hairline flex items-center justify-between gap-3">
             <div className="min-w-0">
               <h2 className="text-ink font-bold text-lg break-words">Apply for {job.title}</h2>
@@ -196,7 +196,7 @@ const ApplyModal = ({ job, onClose }: Props) => {
               </button>
             </form>
           )}
-        </div>
+        </Card>
       </div>
     </>
   );

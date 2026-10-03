@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { JobFilters } from '../types';
+import Card from './Card';
 
 const TYPES = ['full-time', 'part-time', 'remote', 'contract'];
 const CATEGORIES = ['Engineering', 'Design', 'DevOps', 'Marketing', 'Sales', 'Product'];
@@ -27,7 +28,7 @@ const SearchFilters = ({ onFilter, total }: Props) => {
   const hasFilters = search || type || category;
 
   return (
-    <div className="bg-white border border-hairline rounded-2xl p-4 sm:p-5 mb-6">
+    <Card className=" p-4 sm:p-5 mb-6">
       <form onSubmit={handleSearch}>
         <div className="flex gap-3 mb-4">
           <input
@@ -74,7 +75,7 @@ const SearchFilters = ({ onFilter, total }: Props) => {
           </span>
         </div>
       </form>
-    </div>
+    </Card>
   );
 };
 

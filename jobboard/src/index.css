@@ -17,3 +17,10 @@ body {
   background: var(--color-paper);
   color: var(--color-ink);
 }
+
+a:focus-visible,
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-evergreen);
+  border-radius: 0.5rem;
+}

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getJob } from '../../api/client';
 import ApplyModal from '../../components/ApplyModal';
+import Card from '../../components/Card';
 
 const TYPE_COLORS: Record<string, string> = {
   'full-time': 'bg-evergreen/10 text-evergreen border-evergreen/20',
@@ -60,7 +61,7 @@ const JobDetailPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         {/* Main content */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white border border-hairline rounded-2xl p-6">
+          <Card >
             <div className="flex items-start gap-4 mb-4">
               <div className="w-16 h-16 bg-evergreen/10 rounded-xl flex items-center justify-center
                               text-2xl font-bold text-evergreen shrink-0">
@@ -86,17 +87,17 @@ const JobDetailPage = () => {
               <p>💰 {formatSalary()}</p>
               <p>👥 {job.applications_count || 0} applicants</p>
             </div>
-          </div>
+          </Card>
 
           {/* Description */}
-          <div className="bg-white border border-hairline rounded-2xl p-6">
+          <Card >
             <h2 className="text-ink font-bold text-lg mb-4">About This Role</h2>
             <p className="text-ink/60 leading-relaxed whitespace-pre-line">{job.description}</p>
-          </div>
+          </Card>
 
           {/* Requirements */}
           {requirements.length > 0 && (
-            <div className="bg-white border border-hairline rounded-2xl p-6">
+            <Card >
               <h2 className="text-ink font-bold text-lg mb-4">Requirements</h2>
               <ul className="space-y-2">
                 {requirements.map((req: string, i: number) => (
@@ -106,25 +107,10 @@ const JobDetailPage = () => {
                   </li>
                 ))}
               </ul>
-            </div>
+            </Card>
           )}
         </div>
-
-        {/* Sidebar */}
-        {/* <div className="space-y-4">
-          <div className="bg-white border border-hairline rounded-2xl p-5 sticky top-24">
-            <button
-              onClick={() => setShowApply(true)}
-              className="w-full bg-evergreen hover:bg-evergreen-dark text-white font-bold
-                         py-3 rounded-xl transition-colors mb-3">
-              Apply Now →
-            </button>
-            <p className="text-ink/40 text-xs text-center">
-              Applications sent to {job.apply_email}
-            </p>
-          </div>
-        </div> */}
-        <div className="bg-white border border-hairline rounded-2xl p-5 sticky top-24">
+        <Card className="sticky top-24">
           {job.is_active === false ? (
             <p className="text-center text-sm font-medium text-ink/50 py-2">
               This job is no longer accepting applications.
@@ -142,7 +128,7 @@ const JobDetailPage = () => {
               </p>
             </>
           )}
-        </div>
+        </Card>
       </div>
 
       {showApply && (

@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createJob, getJob, updateJob } from '../../api/client';
 import { useAuthStore } from '../../stores/authStore';
+import Card from '../../components/Card';
 
 const postJobSchema = z.object({
   title: z.string().min(3, 'Job title is required'),
@@ -131,7 +132,7 @@ const PostJobPage = () => {
       </div>
 
       <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5">
-        <div className="bg-white border border-hairline rounded-2xl p-5 sm:p-6 space-y-4">
+        <Card className="space-y-4">
           <h2 className="text-ink font-bold">Job Details</h2>
 
           <div>
@@ -173,9 +174,9 @@ const PostJobPage = () => {
               </select>
             </div>
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-white border border-hairline rounded-2xl p-5 sm:p-6 space-y-4">
+        <Card>
           <h2 className="text-ink font-bold">Salary (Optional)</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
@@ -195,9 +196,9 @@ const PostJobPage = () => {
               <input {...register('salary_max')} placeholder="e.g. 80000" className={inputClass()} />
             </div>
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-white border border-hairline rounded-2xl p-5 sm:p-6 space-y-4">
+        <Card className= "space-y-4">
           <h2 className="text-ink font-bold">Description</h2>
           <div>
             <label className="text-xs text-ink/60 mb-1 block">Job Description *</label>
@@ -214,9 +215,9 @@ const PostJobPage = () => {
               placeholder="5+ years React experience&#10;TypeScript proficiency&#10;..."
               className={`${inputClass()} resize-none`} />
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-white border border-hairline rounded-2xl p-5 sm:p-6">
+        <Card >
           <h2 className="text-ink font-bold mb-4">Contact</h2>
           <div>
             <label className="text-xs text-ink/60 mb-1 block">Application Email *</label>
@@ -224,7 +225,7 @@ const PostJobPage = () => {
               className={inputClass(!!errors.apply_email)} />
             {errors.apply_email && <p className="text-red-600 text-xs mt-1">{errors.apply_email.message}</p>}
           </div>
-        </div>
+        </Card>
 
         {mutation.error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl px-4 py-3 text-sm">
