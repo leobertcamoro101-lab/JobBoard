@@ -162,7 +162,7 @@ const EmployerDashboard = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-sm"
           onClick={() => setDeleteTarget(null)}>
           <Card className="w-full max-w-sm p-6 shadow-xl"
-            onClick={(e) => e.stopPropagation()}>
+            onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}>
             <h3 className="text-ink font-bold text-lg mb-2">Delete this job?</h3>
             <p className="text-ink/60 text-sm mb-1 break-words">"{deleteTarget.title}"</p>
             <p className="text-ink/60 text-sm mb-5">
