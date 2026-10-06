@@ -52,9 +52,6 @@ const EmployerLogin = () => {
     <div className="max-w-md mx-auto px-4 sm:px-6 py-12">
       <div className="flex items-start justify-between mb-8">
         <h1 className="text-3xl font-bold text-ink">Employers Login</h1>
-        <Link to="/applicants" className="text-sm font-medium text-evergreen hover:text-evergreen-dark whitespace-nowrap">
-          Post a Resume
-        </Link>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
