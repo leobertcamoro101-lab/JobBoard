@@ -50,9 +50,7 @@ const EmployerLogin = () => {
 
   return (
     <div className="max-w-md mx-auto px-4 sm:px-6 py-12">
-      <div className="flex items-start justify-between mb-8">
-        <h1 className="text-3xl font-bold text-ink">Employers Login</h1>
-      </div>
+      <h1 className="text-3xl font-bold text-ink mb-8">Employers Login</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
