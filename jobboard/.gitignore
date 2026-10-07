@@ -29,3 +29,6 @@ vercel --prod
 
 # dead code / component
 AppRoutes.tsx
+
+# to check error in Typescript
+npx tsc --noEmit 
