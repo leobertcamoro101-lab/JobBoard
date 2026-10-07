@@ -2,16 +2,19 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getJobs } from '../../api/client';
 import type { JobFilters } from '../../types';
-import JobCard from '../../components/JobCard';
 import SearchFilters from '../../components/SearchFilters';
+import JobList from '../../components/JobList';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const HomePage = () => {
   const [filters, setFilters] = useState<JobFilters>({});
 
-  const { data: jobs = [], isLoading, error } = useQuery({
+  const { data: jobs = [], isLoading, isFetching, error } = useQuery({
     queryKey: ['jobs', filters],
     queryFn: () => getJobs(filters),
   });
+
+  const isRefetching = isFetching && !isLoading;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
@@ -27,30 +30,18 @@ const HomePage = () => {
 
       <SearchFilters onFilter={setFilters} total={jobs.length} />
 
-      {isLoading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-pulse">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-hairline/50 rounded-2xl h-52" />
-          ))}
-        </div>
+      {/* Thin bar instead of a full spinner swap — only shows while filters are being applied */}
+      {isRefetching && (
+        <div className="h-0.5 w-full bg-evergreen/40 rounded-full mb-4 -mt-2 animate-pulse" />
       )}
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4">
-          ⚠️ Failed to load jobs. Is the Laravel server running on port 8000?
+      {isLoading ? (
+        <div className="py-20">
+          <LoadingSpinner />
         </div>
-      )}
-
-      {!isLoading && jobs.length === 0 && (
-        <div className="text-center py-16 text-ink/40">
-          <p className="text-4xl mb-3">🔍</p>
-          <p>No jobs found. Try different filters.</p>
-        </div>
-      )}
-
-      {!isLoading && jobs.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {jobs.map(job => <JobCard key={job.id} job={job} />)}
+      ) : (
+        <div className={isRefetching ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
+          <JobList jobs={jobs} error={error} />
         </div>
       )}
     </div>
