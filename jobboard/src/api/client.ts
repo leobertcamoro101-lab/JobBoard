@@ -1,6 +1,15 @@
 import axios, { type AxiosResponse } from 'axios';
 import type { Application, EmployerJob, EmployerApplication, ApplicationStatus } from '../types';
 import { notifyUnauthorized } from './auth-bridge';
+import { notifyLoadingStart, notifyLoadingStop } from '../context/loading-bridge';
+
+// Lets a request opt out of the global loading indicator — used by the
+// background session-expiry ping so it doesn't flash the spinner on every check.
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    silent?: boolean;
+  }
+}
 
 import type {
   User, LoginPayload, ApplicantRegisterPayload, EmployerRegisterPayload,
@@ -19,20 +28,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// api.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     // Token missing/expired/revoked — clear stale auth state.
-//     // JobBoard has two login pages (applicant/employer), so unlike a single
-//     // /login redirect, we just clear state and let the current page's guard
-//     // (or the user) decide where to go next.
-//     if (error.response?.status === 401) {
-//       localStorage.removeItem('token');
-//       localStorage.removeItem('auth-storage');
-//     }
-//     return Promise.reject(error);
-//   },
-// );
 
 api.interceptors.response.use(
   (response) => response,
@@ -47,7 +42,33 @@ api.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+api.interceptors.request.use((config) => {
+  if (!config.silent) notifyLoadingStart();
+  return config;
+});
 
+api.interceptors.response.use(
+  (response) => {
+    if (!response.config.silent) notifyLoadingStop();
+    return response;
+  },
+  (error) => {
+    if (!error.config?.silent) notifyLoadingStop();
+
+    // Token missing/expired/revoked — clear stale auth state and send the user back to login
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('auth-storage');
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
+
+    return Promise.reject(error);
+  },
+);
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 interface AuthResponse {
   user: User;
   token: string;

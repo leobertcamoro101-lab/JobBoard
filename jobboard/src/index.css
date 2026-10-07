@@ -9,6 +9,12 @@
   --color-hairline: #E4E0D8;
 }
 
+/* @keyframes loading-bar {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(150%); }
+  100% { transform: translateX(-100%); }
+} */
+
 body {
   /* font-family: "Segoe UI", system-ui, sans-serif;
   background: #0a0a0f;
@@ -24,3 +30,11 @@ button:focus-visible {
   box-shadow: 0 0 0 2px var(--color-evergreen);
   border-radius: 0.5rem;
 }
+
+#nprogress .bar {
+  background: #ff0055 !important;
+}
+#nprogress .peg {
+  box-shadow: 0 0 10px #ff0055, 0 0 5px #ff0055 !important;
+}
+
