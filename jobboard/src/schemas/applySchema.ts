@@ -22,4 +22,7 @@ export const applicantSchema = z.object({
   ...sharedFields,
 });
 
-export type ApplyForm = z.infer<typeof guestSchema>;
+// The form's actual runtime shape is the looser one — name/email are only
+// guaranteed present for guests, which guestSchema's validation enforces at
+// submit time, not at the type level.
+export type ApplyForm = z.infer<typeof applicantSchema>;
