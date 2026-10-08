@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use App\Mail\ConfirmationCodeMail;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
