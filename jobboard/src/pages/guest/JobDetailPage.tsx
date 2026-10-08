@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getJob } from '../../api/client';
-import ApplyModal from '../../components/ApplyModal';
+import ApplyModal from './ApplyModal';
 import Card from '../../components/Card';
 
 const TYPE_COLORS: Record<string, string> = {

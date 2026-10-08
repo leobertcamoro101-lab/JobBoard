@@ -16,19 +16,41 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-        private function generateCode(string $email, array $payload): string
-    {
-        $code = (string) random_int(1000, 9999);
+        // private function generateCode(string $email, array $payload): string
+        // {
+        //     $code = (string) random_int(1000, 9999);
 
-        PendingRegistration::updateOrCreate(
-            ['email' => $email],
-            ['code' => $code, 'payload' => $payload, 'expires_at' => now()->addMinutes(15)]
-        );
+        //     PendingRegistration::updateOrCreate(
+        //         ['email' => $email],
+        //         ['code' => $code, 'payload' => $payload, 'expires_at' => now()->addMinutes(15)]
+        //     );
 
-        Log::info("Confirmation code for {$email}: {$code}");
+        //     Log::info("Confirmation code for {$email}: {$code}");
 
-        return $code;
-    }
+        //     return $code;
+        // }
+  private function generateCode(string $email, array $payload): string
+  {
+      $code = (string) random_int(1000, 9999);
+
+      PendingRegistration::updateOrCreate(
+          ['email' => $email],
+          ['code' => $code, 'payload' => $payload, 'expires_at' => now()->addMinutes(15)]
+      );
+
+      try {
+          Mail::to($email)->send(new ConfirmationCodeMail($code));
+      } catch (\Throwable $e) {
+          // Log the failure, never the code itself
+          Log::error('Confirmation email failed', ['email' => $email, 'error' => $e->getMessage()]);
+
+          throw ValidationException::withMessages([
+              'email' => 'We couldn\'t send the confirmation email. Please try again in a moment.',
+          ]);
+      }
+
+      return $code;
+  }
 
     private function verifyCode(string $email, string $code): PendingRegistration
     {
@@ -212,35 +234,6 @@ public function confirmApplicantRegistration(Request $request)
 
         return response()->json(['user' => $user, 'token' => $token]);
     }
-
-    // public function login(Request $request)
-    // {
-    //     $request->validate([
-    //         'email' => ['required', 'email'],
-    //         'password' => ['required'],
-    //     ]);
-
-    //     $user = \App\Models\User::where('email', $request->email)->first();
-
-    //     \Log::info('LOGIN DEBUG', [
-    //         'email_received' => $request->email,
-    //         'user_found' => (bool) $user,
-    //         'user_id' => $user->id ?? null,
-    //         'hash_check' => $user ? \Hash::check($request->password, $user->password) : null,
-    //         'auth_attempt' => \Auth::attempt($request->only('email', 'password'), $request->boolean('remember')),
-    //     ]);
-
-    //     if (! \Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-    //         throw \Illuminate\Validation\ValidationException::withMessages(['email' => 'Invalid credentials']);
-    //     }
-
-    //     $user = \Auth::user();
-    //     $user->load($user->role === 'employer' ? 'employerProfile' : 'applicantProfile');
-
-    //     $token = $user->createToken('auth')->plainTextToken;
-
-    //     return response()->json(['user' => $user, 'token' => $token]);
-    // }
 
     public function logout(Request $request)
     {

@@ -3,12 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { applyForJob } from '../api/client';
-import { useAuthStore } from '../stores/authStore';
-import type { Job } from '../types';
-import Modal from './Modal';
-import ApplicantIdentityField from './ApplicantIdentityField';
-import { guestSchema, applicantSchema, type ApplyForm } from '../schemas/applySchema';
+import { applyForJob } from '../../api/client';
+import { useAuthStore } from '../../stores/authStore';
+import type { Job } from '../../types';
+import Modal from '../../components/Modal';
+import ApplicantIdentityField from '../../components/ApplicantIdentityField';
+import { guestSchema, applicantSchema, type ApplyForm } from '../../schemas/applySchema';
 
 interface Props {
   job: Job;
