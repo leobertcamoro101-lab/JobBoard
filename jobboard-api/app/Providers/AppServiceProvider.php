@@ -23,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
     {
         //Enable lazy loading prevention
         Model::preventLazyLoading(! $this->app->isProduction());
+        
         $link = public_path('storage');
 
         if (! file_exists($link) && ! is_link($link)) {
