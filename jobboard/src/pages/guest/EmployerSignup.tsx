@@ -103,14 +103,15 @@ const EmployerSignup = () => {
 
   const handleStep2Submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!code.trim()) {
-      setCodeError('Confirmation Code is required');
-      return;
-    }
     if (requiresCode && !code.trim()) {
      setCodeError('Confirmation Code is required');
      return;
-   }
+    }
+    // if (!code.trim()) {
+    //   setCodeError('Confirmation Code is required');
+    //   return;
+    // }
+
     setCodeError('');
     setStep2Error('');
     setStep2Pending(true);

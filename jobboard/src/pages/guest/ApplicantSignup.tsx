@@ -106,14 +106,16 @@ const ApplicantSignup = () => {
       setFileError('Please select a resume file');
       return;
     }
-    if (!code.trim()) {
-      setCodeError('Confirmation Code is required');
-      return;
-    }
+    // Only ask for the code when the server actually sent one
     if (requiresCode && !code.trim()) {
      setCodeError('Confirmation Code is required');
      return;
-   }
+    }
+    // if (!code.trim()) {
+    //   setCodeError('Confirmation Code is required');
+    //   return;
+    // }
+    
     setCodeError('');
     setStep2Error('');
     setStep2Pending(true);
