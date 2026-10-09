@@ -49,6 +49,7 @@ const ApplicantSignup = () => {
 
   const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState('');
+  const [requiresCode, setRequiresCode] = useState(true);
 
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState('');
@@ -70,8 +71,9 @@ const ApplicantSignup = () => {
     setStep1Error('');
     setStep1Pending(true);
     try {
-      const { email: confirmedEmail } = await registerApplicant(data);
+      const { email: confirmedEmail, requiresCode: needsCode } = await registerApplicant(data);
       setEmail(confirmedEmail);
+      setRequiresCode(needsCode);
       setStep(2);
     } catch (err: any) {
       setStep1Error(err?.response?.data?.message || 'Something went wrong');
@@ -108,6 +110,10 @@ const ApplicantSignup = () => {
       setCodeError('Confirmation Code is required');
       return;
     }
+    if (requiresCode && !code.trim()) {
+     setCodeError('Confirmation Code is required');
+     return;
+   }
     setCodeError('');
     setStep2Error('');
     setStep2Pending(true);
@@ -241,7 +247,8 @@ const ApplicantSignup = () => {
             </span>
           </label>
 
-          <div className="border-t border-hairline pt-5">
+          {requiresCode && (
+            <div className="border-t border-hairline pt-5">
             <p className="text-sm text-ink mb-3">
               Please enter the code sent to <span className="font-semibold">{email}</span>
             </p>
@@ -250,6 +257,8 @@ const ApplicantSignup = () => {
               className={inputClass(!!codeError)} />
             <FieldError message={codeError} />
           </div>
+          )}
+          
 
           {step2Error && (
             <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
@@ -257,20 +266,21 @@ const ApplicantSignup = () => {
             </div>
           )}
 
-          <div className="flex justify-end">
+            <div className="flex justify-end">
             <button type="submit" disabled={step2Pending}
               className="bg-evergreen hover:bg-evergreen-dark disabled:opacity-50
                          text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center gap-2">
               {step2Pending ? 'Uploading...' : <>Upload Resume →</>}
             </button>
-          </div>
-
-          <p className="text-center">
-            <button type="button" onClick={handleResend} disabled={resendPending}
-              className="text-sm font-medium text-evergreen hover:text-evergreen-dark disabled:opacity-50">
-              {resendPending ? 'Resending...' : 'Resend Confirmation Code'}
-            </button>
-          </p>
+          </div>        
+            {requiresCode && (
+              <p className="text-center">
+                <button type="button" onClick={handleResend} disabled={resendPending}
+                  className="text-sm font-medium text-evergreen hover:text-evergreen-dark disabled:opacity-50">
+                  {resendPending ? 'Resending...' : 'Resend Confirmation Code'}
+                </button>
+              </p>
+            )}
         </form>
       )}
     </div>

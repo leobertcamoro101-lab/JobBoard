@@ -81,11 +81,12 @@ export interface EmployerRegisterPayload {
 export interface RegisterStep1Response {
   message: string;
   email: string;
+  requires_code: boolean;
 }
 
 export interface ConfirmSignupPayload {
   email: string;
-  code: string;
+  code?: string;
   file?: File | null;        // resume (applicant) or logo (employer)
   allowView?: boolean;       // applicant only
 }

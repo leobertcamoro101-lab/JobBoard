@@ -51,6 +51,7 @@ const EmployerSignup = () => {
 
   const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState('');
+  const [requiresCode, setRequiresCode] = useState(true);
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState('');
@@ -71,8 +72,9 @@ const EmployerSignup = () => {
     setStep1Error('');
     setStep1Pending(true);
     try {
-      const { email: confirmedEmail } = await registerEmployer(data);
+      const { email: confirmedEmail, requiresCode: needsCode } = await registerEmployer(data);
       setEmail(confirmedEmail);
+      setRequiresCode(needsCode);
       setStep(2);
     } catch (err: any) {
       setStep1Error(err?.response?.data?.message || 'Something went wrong');
@@ -105,6 +107,10 @@ const EmployerSignup = () => {
       setCodeError('Confirmation Code is required');
       return;
     }
+    if (requiresCode && !code.trim()) {
+     setCodeError('Confirmation Code is required');
+     return;
+   }
     setCodeError('');
     setStep2Error('');
     setStep2Pending(true);
@@ -247,8 +253,8 @@ const EmployerSignup = () => {
             </p>
             <FieldError message={fileError} />
           </div>
-
-          <div className="border-t border-hairline pt-5">
+          {requiresCode && (
+            <div className="border-t border-hairline pt-5">
             <p className="text-sm text-ink mb-3">
               Please enter the code sent to <span className="font-semibold">{email}</span>
             </p>
@@ -257,6 +263,8 @@ const EmployerSignup = () => {
               className={inputClass(!!codeError)} />
             <FieldError message={codeError} />
           </div>
+          )}
+          
 
           {step2Error && (
             <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
@@ -271,13 +279,14 @@ const EmployerSignup = () => {
               {step2Pending ? 'Creating account...' : <>Create Account →</>}
             </button>
           </div>
-
-          <p className="text-center">
+          {requiresCode && (
+            <p className="text-center">
             <button type="button" onClick={handleResend} disabled={resendPending}
               className="text-sm font-medium text-evergreen hover:text-evergreen-dark disabled:opacity-50">
               {resendPending ? 'Resending...' : 'Resend Confirmation Code'}
             </button>
           </p>
+          )}
         </form>
       )}
     </div>

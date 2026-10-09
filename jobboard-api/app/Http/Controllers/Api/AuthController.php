@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ConfirmationCodeMail;
 use App\Models\ApplicantProfile;
 use App\Models\EmployerProfile;
 use App\Models\PendingRegistration;
@@ -11,59 +12,61 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use App\Mail\ConfirmationCodeMail;
-use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
-        // private function generateCode(string $email, array $payload): string
-        // {
-        //     $code = (string) random_int(1000, 9999);
+    private function requiresConfirmation(): bool
+    {
+        return (bool) config('jobboard.require_email_confirmation', true);
+    }
 
-        //     PendingRegistration::updateOrCreate(
-        //         ['email' => $email],
-        //         ['code' => $code, 'payload' => $payload, 'expires_at' => now()->addMinutes(15)]
-        //     );
+    private function generateCode(string $email, array $payload): string
+    {
+        $code = (string) random_int(1000, 9999);
 
-        //     Log::info("Confirmation code for {$email}: {$code}");
+        PendingRegistration::updateOrCreate(
+            ['email' => $email],
+            ['code' => $code, 'payload' => $payload, 'expires_at' => now()->addMinutes(15)]
+        );
 
-        //     return $code;
-        // }
-  private function generateCode(string $email, array $payload): string
-  {
-      $code = (string) random_int(1000, 9999);
+        // Confirmation switched off: keep the pending row, send nothing
+        if (! $this->requiresConfirmation()) {
+            return $code;
+        }
 
-      PendingRegistration::updateOrCreate(
-          ['email' => $email],
-          ['code' => $code, 'payload' => $payload, 'expires_at' => now()->addMinutes(15)]
-      );
+        try {
+            Mail::to($email)->send(new ConfirmationCodeMail($code));
+        } catch (\Throwable $e) {
+            // Log the failure, never the code itself
+            Log::error('Confirmation email failed', ['email' => $email, 'error' => $e->getMessage()]);
 
-      try {
-          Mail::to($email)->send(new ConfirmationCodeMail($code));
-      } catch (\Throwable $e) {
-          // Log the failure, never the code itself
-          Log::error('Confirmation email failed', ['email' => $email, 'error' => $e->getMessage()]);
+            throw ValidationException::withMessages([
+                'email' => 'We couldn\'t send the confirmation email. Please try again in a moment.',
+            ]);
+        }
 
-          throw ValidationException::withMessages([
-              'email' => 'We couldn\'t send the confirmation email. Please try again in a moment.',
-          ]);
-      }
+        return $code;
+    }
 
-      return $code;
-  }
-
-    private function verifyCode(string $email, string $code): PendingRegistration
+    private function verifyCode(string $email, ?string $code): PendingRegistration
     {
         $pending = PendingRegistration::where('email', $email)->first();
 
-        if (! $pending || $pending->code !== $code) {
+        if (! $pending) {
+            throw ValidationException::withMessages([
+                'email' => 'Your signup expired. Please start again.',
+            ]);
+        }
+
+        if ($this->requiresConfirmation() && $pending->code !== $code) {
             throw ValidationException::withMessages(['code' => 'Invalid confirmation code']);
         }
 
         if ($pending->isExpired()) {
-            throw ValidationException::withMessages(['code' => 'Confirmation code has expired']);
+            throw ValidationException::withMessages(['code' => 'Your signup expired. Please start again.']);
         }
 
         return $pending;
@@ -74,149 +77,162 @@ class AuthController extends Controller
         return ['required', 'string', 'min:10', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'regex:/[^A-Za-z0-9]/'];
     }
 
+    private function codeRule(): array
+    {
+        return [$this->requiresConfirmation() ? 'required' : 'nullable', 'string'];
+    }
+
     public function registerApplicant(Request $request)
-		{
-				$data = $request->validate([
-						'email' => ['required', 'email', Rule::unique('users', 'email')],
-						'password' => $this->passwordRules(),
-						'confirmPassword' => ['required', 'same:password'],
-						'firstName' => ['required', 'string'],
-						'lastName' => ['required', 'string'],
-						'mobileNumber' => ['required', 'string'],
-				]);
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', Rule::unique('users', 'email')],
+            'password' => $this->passwordRules(),
+            'confirmPassword' => ['required', 'same:password'],
+            'firstName' => ['required', 'string'],
+            'lastName' => ['required', 'string'],
+            'mobileNumber' => ['required', 'string'],
+        ]);
 
-				$this->generateCode($data['email'], [
-						'password' => Hash::make($data['password']),
-						'first_name' => $data['firstName'],
-						'last_name' => $data['lastName'],
-						'mobile_number' => $data['mobileNumber'],
-				]);
+        $this->generateCode($data['email'], [
+            'password' => Hash::make($data['password']),
+            'first_name' => $data['firstName'],
+            'last_name' => $data['lastName'],
+            'mobile_number' => $data['mobileNumber'],
+        ]);
 
-				return response()->json(['message' => 'Confirmation code sent', 'email' => $data['email']]);
-		}
+        return response()->json([
+            'message' => $this->requiresConfirmation() ? 'Confirmation code sent' : 'Continue to the next step',
+            'email' => $data['email'],
+            'requires_code' => $this->requiresConfirmation(),
+        ]);
+    }
 
-public function confirmApplicantRegistration(Request $request)
-{
-    $data = $request->validate([
-        'email' => ['required', 'email'],
-        'code' => ['required', 'string'],
-        'resume' => ['required', 'file', 'mimes:doc,docx,odt,pdf,rtf', 'max:900'],
-        'allow_view' => ['required'],
-    ]);
+    public function confirmApplicantRegistration(Request $request)
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', Rule::unique('users', 'email')],
+            'code' => $this->codeRule(),
+            'resume' => ['required', 'file', 'mimes:doc,docx,odt,pdf,rtf', 'max:900'],
+            'allow_view' => ['required'],
+        ]);
 
-    $pending = $this->verifyCode($data['email'], $data['code']);
-    $payload = $pending->payload;
+        $pending = $this->verifyCode($data['email'], $data['code'] ?? null);
+        $payload = $pending->payload;
 
-    $user = User::create([
-        'name' => trim($payload['first_name'] . ' ' . $payload['last_name']),
-        'email' => $data['email'],
-        'password' => $payload['password'],
-        'role' => 'applicant',
-        'first_name' => $payload['first_name'],
-        'last_name' => $payload['last_name'],
-        'mobile_number' => $payload['mobile_number'],
-        'email_verified_at' => now(),
-    ]);
+        $user = User::create([
+            'name' => trim($payload['first_name'] . ' ' . $payload['last_name']),
+            'email' => $data['email'],
+            'password' => $payload['password'],
+            'role' => 'applicant',
+            'first_name' => $payload['first_name'],
+            'last_name' => $payload['last_name'],
+            'mobile_number' => $payload['mobile_number'],
+            'email_verified_at' => $this->requiresConfirmation() ? now() : null,
+        ]);
 
-    $resumePath = $request->file('resume')->store('resumes', 'public');
+        $resumePath = $request->file('resume')->store('resumes', 'public');
 
-    ApplicantProfile::create([
-        'user_id' => $user->id,
-        'resume_path' => $resumePath,
-        'allow_view' => filter_var($data['allow_view'], FILTER_VALIDATE_BOOLEAN),
-    ]);
+        ApplicantProfile::create([
+            'user_id' => $user->id,
+            'resume_path' => $resumePath,
+            'allow_view' => filter_var($data['allow_view'], FILTER_VALIDATE_BOOLEAN),
+        ]);
 
-    $pending->delete();
+        $pending->delete();
 
-    $token = $user->createToken('auth')->plainTextToken;
+        $token = $user->createToken('auth')->plainTextToken;
 
-    return response()->json([
-        'user' => $user->load('applicantProfile'),
-        'token' => $token,
-    ]);
-}
+        return response()->json([
+            'user' => $user->load('applicantProfile'),
+            'token' => $token,
+        ]);
+    }
 
     public function registerEmployer(Request $request)
-		{
-				$data = $request->validate([
-						'email' => ['required', 'email', Rule::unique('users', 'email')],
-						'password' => $this->passwordRules(),
-						'confirmPassword' => ['required', 'same:password'],
-						'firstName' => ['required', 'string'],
-						'lastName' => ['required', 'string'],
-						'mobileNumber' => ['required', 'string'],
-						'companyName' => ['required', 'string'],
-						'companyWebsite' => ['nullable', 'url'],
-				]);
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', Rule::unique('users', 'email')],
+            'password' => $this->passwordRules(),
+            'confirmPassword' => ['required', 'same:password'],
+            'firstName' => ['required', 'string'],
+            'lastName' => ['required', 'string'],
+            'mobileNumber' => ['required', 'string'],
+            'companyName' => ['required', 'string'],
+            'companyWebsite' => ['nullable', 'url'],
+        ]);
 
-				$this->generateCode($data['email'], [
-						'password' => Hash::make($data['password']),
-						'first_name' => $data['firstName'],
-						'last_name' => $data['lastName'],
-						'mobile_number' => $data['mobileNumber'],
-						'company_name' => $data['companyName'],
-						'company_website' => $data['companyWebsite'] ?? null,
-				]);
+        $this->generateCode($data['email'], [
+            'password' => Hash::make($data['password']),
+            'first_name' => $data['firstName'],
+            'last_name' => $data['lastName'],
+            'mobile_number' => $data['mobileNumber'],
+            'company_name' => $data['companyName'],
+            'company_website' => $data['companyWebsite'] ?? null,
+        ]);
 
-				return response()->json(['message' => 'Confirmation code sent', 'email' => $data['email']]);
-		}
+        return response()->json([
+            'message' => $this->requiresConfirmation() ? 'Confirmation code sent' : 'Continue to the next step',
+            'email' => $data['email'],
+            'requires_code' => $this->requiresConfirmation(),
+        ]);
+    }
 
-		public function confirmEmployerRegistration(Request $request)
-		{
-				$data = $request->validate([
-						'email' => ['required', 'email'],
-						'code' => ['required', 'string'],
-						'logo' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:900'],
-				]);
+    public function confirmEmployerRegistration(Request $request)
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', Rule::unique('users', 'email')],
+            'code' => $this->codeRule(),
+            'logo' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:900'],
+        ]);
 
-				$pending = $this->verifyCode($data['email'], $data['code']);
-				$payload = $pending->payload;
+        $pending = $this->verifyCode($data['email'], $data['code'] ?? null);
+        $payload = $pending->payload;
 
-				$user = User::create([
-						'name' => trim($payload['first_name'] . ' ' . $payload['last_name']),
-						'email' => $data['email'],
-						'password' => $payload['password'],
-						'role' => 'employer',
-						'first_name' => $payload['first_name'],
-						'last_name' => $payload['last_name'],
-						'mobile_number' => $payload['mobile_number'],
-						'email_verified_at' => now(),
-				]);
+        $user = User::create([
+            'name' => trim($payload['first_name'] . ' ' . $payload['last_name']),
+            'email' => $data['email'],
+            'password' => $payload['password'],
+            'role' => 'employer',
+            'first_name' => $payload['first_name'],
+            'last_name' => $payload['last_name'],
+            'mobile_number' => $payload['mobile_number'],
+            'email_verified_at' => $this->requiresConfirmation() ? now() : null,
+        ]);
 
-				$logoPath = $request->hasFile('logo')
-						? $request->file('logo')->store('company-logos', 'public')
-						: null;
+        $logoPath = $request->hasFile('logo')
+            ? $request->file('logo')->store('company-logos', 'public')
+            : null;
 
-				EmployerProfile::create([
-						'user_id' => $user->id,
-						'company_name' => $payload['company_name'],
-						'company_website' => $payload['company_website'],
-						'company_logo_path' => $logoPath,
-				]);
+        EmployerProfile::create([
+            'user_id' => $user->id,
+            'company_name' => $payload['company_name'],
+            'company_website' => $payload['company_website'],
+            'company_logo_path' => $logoPath,
+        ]);
 
-				$pending->delete();
+        $pending->delete();
 
-				$token = $user->createToken('auth')->plainTextToken;
+        $token = $user->createToken('auth')->plainTextToken;
 
-				return response()->json([
-						'user' => $user->load('employerProfile'),
-						'token' => $token,
-				]);
-		}
+        return response()->json([
+            'user' => $user->load('employerProfile'),
+            'token' => $token,
+        ]);
+    }
 
     public function resendCode(Request $request)
-		{
-				$data = $request->validate(['email' => ['required', 'email']]);
+    {
+        $data = $request->validate(['email' => ['required', 'email']]);
 
-				$existing = PendingRegistration::where('email', $data['email'])->first();
-				if (! $existing) {
-						throw ValidationException::withMessages(['email' => 'No pending registration found for this email']);
-				}
+        $existing = PendingRegistration::where('email', $data['email'])->first();
+        if (! $existing) {
+            throw ValidationException::withMessages(['email' => 'No pending registration found for this email']);
+        }
 
-				$this->generateCode($data['email'], $existing->payload);
+        $this->generateCode($data['email'], $existing->payload);
 
-				return response()->json(['message' => 'Confirmation code resent']);
-		}
+        return response()->json(['message' => 'Confirmation code resent']);
+    }
 
     public function login(Request $request)
     {

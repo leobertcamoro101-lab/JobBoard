@@ -96,7 +96,8 @@ export const confirmApplicantSignup = (
 ): Promise<AxiosResponse<AuthResponse>> => {
   const formData = new FormData();
   formData.append('email', data.email);
-  formData.append('code', data.code);
+  if (data.code) formData.append('code', data.code);
+  // formData.append('code', data.code);
   if (data.file) formData.append('resume', data.file);
   formData.append('allow_view', String(data.allowView ?? true));
   return api.post('/applicant/register/confirm', formData, {
@@ -114,7 +115,8 @@ export const confirmEmployerSignup = (
 ): Promise<AxiosResponse<AuthResponse>> => {
   const formData = new FormData();
   formData.append('email', data.email);
-  formData.append('code', data.code);
+  if (data.code) formData.append('code', data.code);
+  // formData.append('code', data.code);
   if (data.file) formData.append('logo', data.file);
   return api.post('/employer/register/confirm', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },

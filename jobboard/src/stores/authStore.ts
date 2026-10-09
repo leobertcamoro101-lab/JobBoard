@@ -25,10 +25,10 @@ interface AuthState {
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 
-  registerApplicant: (data: ApplicantRegisterPayload) => Promise<{ email: string }>;
+  registerApplicant: (data: ApplicantRegisterPayload) => Promise<{ email: string; requiresCode: boolean }>;
   confirmApplicantSignup: (data: ConfirmSignupPayload) => Promise<User>;
 
-  registerEmployer: (data: EmployerRegisterPayload) => Promise<{ email: string }>;
+  registerEmployer: (data: EmployerRegisterPayload) => Promise<{ email: string; requiresCode: boolean }>;
   confirmEmployerSignup: (data: ConfirmSignupPayload) => Promise<User>;
 
   resendCode: (data: ResendCodePayload) => Promise<void>;
@@ -63,7 +63,7 @@ export const useAuthStore = create<AuthState>()(
       // Step 1 doesn't authenticate — account isn't verified yet
       registerApplicant: async (data) => {
         const { data: res } = await apiRegisterApplicant(data);
-        return { email: res.email };
+        return { email: res.email, requiresCode: res.requires_code ?? true };
       },
 
       // Step 2 confirms the code + uploads resume — this is what actually logs them in
@@ -76,7 +76,7 @@ export const useAuthStore = create<AuthState>()(
 
       registerEmployer: async (data) => {
         const { data: res } = await apiRegisterEmployer(data);
-        return { email: res.email };
+        return { email: res.email, requiresCode: res.requires_code ?? true };
       },
 
       confirmEmployerSignup: async (data) => {
