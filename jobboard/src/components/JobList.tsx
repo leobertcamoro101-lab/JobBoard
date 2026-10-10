@@ -10,7 +10,7 @@ const JobList = ({ jobs, error }: JobListProps) => {
   if (error) {
     return (
       <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4">
-        ⚠️ Failed to load jobs. Is the Laravel server running on port 8000?
+        ⚠️ We couldn't load jobs right now. Please try again in a moment.
       </div>
     );
   }
