@@ -130,6 +130,10 @@ export const changePassword = (data: {
 }): Promise<{ message: string }> =>
   api.put('/profile/password', data).then((res) => res.data);
 
+export const updateProfile = (data: FormData): Promise<User> =>
+api.post('/profile', data, { headers: { 'Content-Type': 'multipart/form-data' } })
+  .then((res) => res.data);
+
 export const getMyApplications = (): Promise<Application[]> =>
   api.get('/applicant/applications').then((res) => res.data);
 

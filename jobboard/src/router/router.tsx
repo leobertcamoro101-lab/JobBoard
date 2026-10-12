@@ -12,6 +12,7 @@ import ApplicantDashboard from "../pages/authenticated/ApplicantDashboard";
 import EmployerDashboard from "../pages/authenticated/EmployerDashboard";
 import JobApplicantsPage from "../pages/authenticated/JobApplicantsPage";
 import ChangePasswordPage from "../pages/authenticated/ChangePassword";
+import ProfilePage from "../pages/authenticated/ProfilePage";
 
 const router = createBrowserRouter([
   {
@@ -68,6 +69,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ChangePasswordPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/account/profile',
+        element: (
+          <ProtectedRoute>
+            <ProfilePage />
           </ProtectedRoute>
         ),
       },

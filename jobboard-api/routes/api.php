@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\ApplicationController;
+use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Jobs: browsing is public
@@ -27,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/profile/password', [AuthController::class, 'changePassword'])->middleware('throttle:6,1');
+    Route::post('/profile', [ProfileController::class, 'update']);
 
     // Employer: manage own jobs
     Route::post('jobs', [JobController::class, 'store']);
