@@ -123,19 +123,19 @@ export const confirmEmployerSignup = (
   });
 };
 
+export const changePassword = (data: {
+  current_password: string;
+  password: string;
+  password_confirmation: string;
+}): Promise<{ message: string }> =>
+  api.put('/profile/password', data).then((res) => res.data);
+
 export const getMyApplications = (): Promise<Application[]> =>
   api.get('/applicant/applications').then((res) => res.data);
 
 export const getEmployerJobs = (): Promise<EmployerJob[]> =>
   api.get('/employer/jobs').then((res) => res.data);
 
-// Jobs
-
-// export const getJobs = (params?: JobFilters): Promise<AxiosResponse<Job[]>> => api.get('/jobs', { params });
-// export const getJob = (id: number): Promise<AxiosResponse<Job>> => api.get(`/jobs/${id}`);
-// export const createJob = (data: Partial<Job>): Promise<AxiosResponse<Job>> => api.post('/jobs', data).then(r => r.data);
-// export const applyForJob = (jobId: number, data: unknown): Promise<AxiosResponse<MessageResponse>> =>
-//   api.post(`/jobs/${jobId}/apply`, data);
 
 // Jobs
 export const getJobs = (params?: JobFilters): Promise<Job[]> =>

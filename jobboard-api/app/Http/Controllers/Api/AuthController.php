@@ -253,6 +253,33 @@ class AuthController extends Controller
         return response()->json(['user' => $user, 'token' => $token]);
     }
 
+    public function changePassword(Request $request)
+    {
+        $data = $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => array_merge($this->passwordRules(), ['different:current_password']),
+            'password_confirmation' => ['required', 'same:password'],
+        ]);
+
+        $user = $request->user();
+
+        if (! Hash::check($data['current_password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => 'Your current password is incorrect.',
+            ]);
+        }
+
+        $user->password = Hash::make($data['password']);
+        $user->save();
+
+        // Sign out every other device; keep the one making this request
+        $user->tokens()
+            ->where('id', '!=', $request->user()->currentAccessToken()->id)
+            ->delete();
+
+        return response()->json(['message' => 'Password updated']);
+    }
+
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();

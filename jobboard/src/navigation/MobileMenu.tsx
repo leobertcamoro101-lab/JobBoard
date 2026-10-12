@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Briefcase, LogOut, SquareUser, User as UserIcon } from 'lucide-react';
+import { Briefcase, KeyRound, LogOut, SquareUser, User as UserIcon } from 'lucide-react';
 import type { User } from '../types';
 
 interface Props {
@@ -44,6 +44,10 @@ const MobileMenu = ({ user, isAuthenticated, dashboardPath, canPostJob, pathname
           <Link to={dashboardPath} onClick={onClose}
             className="flex items-center gap-2 px-2 py-2.5 text-sm font-medium text-ink/60 hover:bg-gray-50 rounded-lg">
             <UserIcon size={16} /> Dashboard
+          </Link>
+          <Link to="/account/password" onClick={onClose}
+            className="flex items-center gap-2 px-2 py-2.5 text-sm font-medium text-ink/60 hover:bg-gray-50 rounded-lg">
+            <KeyRound size={16} /> Change password
           </Link>
           {canPostJob && postJob}
           <button onClick={onLogout}

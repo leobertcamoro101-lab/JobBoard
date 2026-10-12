@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, LogOut, User as UserIcon } from 'lucide-react';
+import { ChevronDown, KeyRound, LogOut, User as UserIcon } from 'lucide-react';
 import { useClickOutside } from '../hooks/useClickOutside';
 import type { User } from '../types';
 
@@ -40,6 +40,10 @@ const UserMenu = ({ user, dashboardPath, onLogout }: Props) => {
           <Link to={dashboardPath} onClick={() => setOpen(false)}
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 no-underline">
             <UserIcon size={16} /> Dashboard
+          </Link>
+          <Link to="/account/password" onClick={() => setOpen(false)}
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 no-underline">
+            <KeyRound size={16} /> Change password
           </Link>
           <button onClick={() => { setOpen(false); onLogout(); }}
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50">
