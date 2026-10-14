@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Briefcase, KeyRound, LogOut, Settings, SquareUser, User as UserIcon } from 'lucide-react';
+import Avatar from '../components/Avatar';
 import type { User } from '../types';
 
 interface Props {
