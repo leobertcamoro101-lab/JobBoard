@@ -14,10 +14,23 @@ interface AvatarProps {
   inline?: boolean;
 }
 
-const getInitials = (name?: string | null): string => {
+// const getInitials = (name?: string | null): string => {
+//   if (!name) return '?';
+//   const parts = name.trim().split(' ').filter(Boolean);
+//   if (parts.length === 0) return '?';
+//   if (parts.length === 1) return parts[0][0].toUpperCase();
+//   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+// };
+
+const getInitials = (name?: string | null, shape: 'circle' | 'square' = 'circle'): string => {
   if (!name) return '?';
-  const parts = name.trim().split(' ').filter(Boolean);
+  const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return '?';
+
+  // Company marks (square): first two letters of the name, e.g. "Apex Technology Group" -> "AP"
+  if (shape === 'square') return parts.join('').slice(0, 2).toUpperCase();
+
+  // People (circle): first and last initial
   if (parts.length === 1) return parts[0][0].toUpperCase();
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 };
@@ -64,7 +77,7 @@ function Avatar({
       aria-label={alt ?? name ?? undefined}
     >
       <span className={`font-bold text-evergreen ${textClass}`} style={{ fontSize }}>
-        {getInitials(name)}
+        {getInitials(name, shape)}
       </span>
     </div>
   );

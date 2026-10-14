@@ -20,16 +20,21 @@ const MobileMenu = ({ user, isAuthenticated, dashboardPath, canPostJob, pathname
       + Post a Job
     </Link>
   );
+  const isEmployer = user?.role === 'employer';
+  const avatarName = isEmployer ? user?.employer_profile?.company_name ?? user?.name : user?.name;
+  const avatarImage = isEmployer ? user?.employer_profile?.company_logo_url : null;
 
   return (
     <div className="sm:hidden border-t border-hairline bg-white px-4 py-3 space-y-1">
       {isAuthenticated && user ? (
         <>
           <div className="flex items-center gap-3 px-2 py-3 border-b border-hairline mb-1">
-            <span className="w-9 h-9 rounded-full bg-evergreen/10 text-evergreen font-bold
+            {/* <span className="w-9 h-9 rounded-full bg-evergreen/10 text-evergreen font-bold
                              text-sm flex items-center justify-center shrink-0">
               {user.first_name?.charAt(0) || user.name?.charAt(0) || 'U'}
-            </span>
+            </span> */}
+            <Avatar image={avatarImage} name={avatarName} alt={avatarName}
+              width="36px" shape={isEmployer ? 'square' : 'circle'} inline />
             <div className="min-w-0">
               <p className="text-sm font-medium text-ink truncate">{user.name}</p>
               <p className="text-xs text-ink/50 truncate">{user.email}</p>

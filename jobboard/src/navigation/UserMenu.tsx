@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, KeyRound, LogOut, Settings, User as UserIcon } from 'lucide-react';
 import { useClickOutside } from '../hooks/useClickOutside';
+import Avatar from '../components/Avatar';
 import type { User } from '../types';
 
 interface Props {
@@ -14,6 +15,9 @@ const UserMenu = ({ user, dashboardPath, onLogout }: Props) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useClickOutside([ref], () => setOpen(false));
+  const isEmployer = user.role === 'employer';
+  const avatarName = isEmployer ? user.employer_profile?.company_name ?? user.name : user.name;
+  const avatarImage = isEmployer ? user.employer_profile?.company_logo_url : null;
 
   return (
     <div className="relative" ref={ref}>
@@ -22,10 +26,12 @@ const UserMenu = ({ user, dashboardPath, onLogout }: Props) => {
         className="flex items-center gap-2 pl-1 pr-2 py-1 hover:bg-gray-100 rounded-full transition-colors"
         aria-label="Account menu"
       >
-        <span className="w-8 h-8 rounded-full bg-evergreen/10 text-evergreen font-bold
+        {/* <span className="w-8 h-8 rounded-full bg-evergreen/10 text-evergreen font-bold
                          text-sm flex items-center justify-center shrink-0">
           {user.first_name?.charAt(0) || user.name?.charAt(0) || 'U'}
-        </span>
+        </span> */}
+        <Avatar image={avatarImage} name={avatarName} alt={avatarName}
+          width="32px" shape={isEmployer ? 'square' : 'circle'} inline />
         <span className="text-sm font-medium text-ink max-w-[120px] truncate">
           {user.first_name || user.name}
         </span>
