@@ -116,6 +116,7 @@ export interface Job {
   created_at: string;
   updated_at: string;
   is_active: boolean;
+  company_logo_url?: string | null;
 }
 
 export interface JobFilters {

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getJob } from '../../api/client';
 import ApplyModal from './ApplyModal';
 import Card from '../../components/Card';
+import Avatar from '../../components/Avatar';
 
 const TYPE_COLORS: Record<string, string> = {
   'full-time': 'bg-evergreen/10 text-evergreen border-evergreen/20',
@@ -63,10 +64,12 @@ const JobDetailPage = () => {
         <div className="lg:col-span-2 space-y-6">
           <Card >
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-16 h-16 bg-evergreen/10 rounded-xl flex items-center justify-center
+              {/* <div className="w-16 h-16 bg-evergreen/10 rounded-xl flex items-center justify-center
                               text-2xl font-bold text-evergreen shrink-0">
                 {job.company.charAt(0)}
-              </div>
+              </div> */}
+              <Avatar image={job.company_logo_url} name={job.company} alt={`${job.company} logo`}
+                width="64px" shape="square" inline />
               <div className="flex-1">
                 <h1 className="text-2xl font-bold text-ink mb-1">{job.title}</h1>
                 <p className="text-ink/60">{job.company}</p>

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Card from './Card';
+import Avatar from './Avatar';
 import type { Job } from '../types';
 
 const TYPE_COLORS = {
@@ -28,10 +29,12 @@ const JobCard = ({ job }: { job: Job }) => {
     <Card as={Link} to={`/jobs/${job.id}`}
       className="block hover:border-evergreen/40 hover:shadow-md transition-all group">
       <div className="flex items-start justify-between gap-3 mb-4">
-        <div className="w-12 h-12 bg-evergreen/10 rounded-xl flex items-center justify-center
+        {/* <div className="w-12 h-12 bg-evergreen/10 rounded-xl flex items-center justify-center
                         text-xl font-bold text-evergreen shrink-0">
           {job.company.charAt(0)}
-        </div>
+        </div> */}
+        <Avatar image={job.company_logo_url} name={job.company} alt={`${job.company} logo`}
+          width="48px" shape="square" inline />
         <span className={`text-xs px-2.5 py-1 rounded-full border font-medium capitalize shrink-0
                           ${TYPE_COLORS[job.type]}`}>
           {job.type}

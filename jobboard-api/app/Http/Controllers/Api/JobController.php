@@ -17,7 +17,8 @@ class JobController extends Controller
 
     public function index(Request $request)
     {
-        $query = Job::withCount('applications')->where('is_active', true);
+        // $query = Job::withCount('applications')->where('is_active', true);
+        $query = Job::with('employerProfile')->withCount('applications')->where('is_active', true);
 
         if ($request->search) {
             $query->where(function ($q) use ($request) {
@@ -65,7 +66,10 @@ class JobController extends Controller
 
     public function show(Job $job)
     {
-        return response()->json($job->loadCount('applications'));
+        // return response()->json($job->loadCount('applications'));
+        return response()->json(
+            $job->load('employerProfile')->loadCount('applications')
+        );
     }
 
     public function update(Request $request, Job $job)
@@ -112,6 +116,7 @@ class JobController extends Controller
     {
         return $request->user()
             ->jobs()
+            ->with('employerProfile')
             ->withCount('applications as applicants_count')
             ->latest()
             ->get();
