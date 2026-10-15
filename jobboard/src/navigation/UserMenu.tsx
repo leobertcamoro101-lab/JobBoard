@@ -33,7 +33,7 @@ const UserMenu = ({ user, dashboardPath, onLogout }: Props) => {
         <Avatar image={avatarImage} name={avatarName} alt={avatarName}
           width="32px" shape={isEmployer ? 'square' : 'circle'} inline />
         <span className="text-sm font-medium text-ink max-w-[120px] truncate">
-          {user.first_name || user.name}
+          {isEmployer ? avatarName: user.first_name || user.name}
         </span>
         <ChevronDown size={16} className="text-gray-500" />
       </button>
