@@ -44,6 +44,10 @@ class JobController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->user()->role !== 'employer') {
+            return response()->json(['message' => 'Only employers can post jobs.'], 403);
+        }
+        
         $data = $request->validate([
             'title'        => 'required|string|max:255',
             'company'      => 'required|string|max:255',
