@@ -1,22 +1,26 @@
 import { createBrowserRouter } from "react-router-dom";
 import RootLayout from "./RootLayout";
+import RouteError from "./RouteError";
 import ProtectedRoute from "../navigation/ProtectedRoute";
-import HomePage from "../pages/guest/HomePage";
-import JobDetailPage from "../pages/guest/JobDetailPage";
-import PostJobPage from "../pages/guest/PostJobPage";
-import ApplicantLogin from "../pages/guest/ApplicantLogin";
-import EmployerLogin from "../pages/guest/EmployerLogin";
-import ApplicantSignup from "../pages/guest/ApplicantSignup";
-import EmployerSignup from "../pages/guest/EmployerSignup";
-import ApplicantDashboard from "../pages/authenticated/ApplicantDashboard";
-import EmployerDashboard from "../pages/authenticated/EmployerDashboard";
-import JobApplicantsPage from "../pages/authenticated/JobApplicantsPage";
-import ChangePasswordPage from "../pages/authenticated/ChangePassword";
-import ProfilePage from "../pages/authenticated/ProfilePage";
+import {
+  HomePage,
+  JobDetailPage,
+  PostJobPage,
+  ApplicantLogin,
+  EmployerLogin,
+  ApplicantSignup,
+  EmployerSignup,
+  ApplicantDashboard,
+  EmployerDashboard,
+  JobApplicantsPage,
+  ChangePasswordPage,
+  ProfilePage,
+} from "./routes-config";
 
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
+    errorElement: <RouteError />,
     children: [
       { path: '/', element: <HomePage /> },
       { path: '/jobs/:id', element: <JobDetailPage /> },
