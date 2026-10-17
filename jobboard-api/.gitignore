@@ -29,3 +29,6 @@ Thumbs.db
 jobboard-data.dump
 configurationIsCached())
 toArray())
+
+# test
+php artisan test

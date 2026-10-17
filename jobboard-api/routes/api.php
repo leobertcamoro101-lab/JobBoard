@@ -13,16 +13,16 @@ Route::apiResource('jobs', JobController::class)->except(['store', 'update', 'de
 Route::post('jobs/{job}/apply', [ApplicationController::class, 'store']);
 
 // Auth: applicant signup (2-step)
-Route::post('/applicant/register', [AuthController::class, 'registerApplicant']);
-Route::post('/applicant/register/confirm', [AuthController::class, 'confirmApplicantRegistration']);
+Route::post('/applicant/register', [AuthController::class, 'registerApplicant'])->middleware('throttle:auth-register');
+Route::post('/applicant/register/confirm', [AuthController::class, 'confirmApplicantRegistration'])->middleware('throttle:auth-confirm');
 
 // Auth: employer signup (2-step)
-Route::post('/employer/register', [AuthController::class, 'registerEmployer']);
-Route::post('/employer/register/confirm', [AuthController::class, 'confirmEmployerRegistration']);
+Route::post('/employer/register', [AuthController::class, 'registerEmployer'])->middleware('throttle:auth-register');
+Route::post('/employer/register/confirm', [AuthController::class, 'confirmEmployerRegistration'])->middleware('throttle:auth-confirm');
 
 // Auth: shared
-Route::post('/register/resend-code', [AuthController::class, 'resendCode']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register/resend-code', [AuthController::class, 'resendCode'])->middleware('throttle:auth-resend');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth-login');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);

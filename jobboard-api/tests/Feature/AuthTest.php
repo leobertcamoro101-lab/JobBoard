@@ -171,4 +171,18 @@ class AuthTest extends TestCase
         $this->assertNotNull(PersonalAccessToken::findToken($current));
         $this->assertNull(PersonalAccessToken::findToken($other));
     }
+
+    public function test_login_is_rate_limited(): void
+    {
+        $user = $this->makeApplicant(['password' => 'CorrectPass123!']);
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->postJson('/api/login', ['email' => $user->email, 'password' => 'WrongPass123!'])
+                ->assertStatus(422);
+        }
+
+        // The sixth attempt is blocked, even with the right password
+        $this->postJson('/api/login', ['email' => $user->email, 'password' => 'CorrectPass123!'])
+            ->assertStatus(429);
+    }
 }
