@@ -42,7 +42,12 @@ const EmployerLogin = () => {
       const user = await login(data);
       navigate(getPostLoginTarget(user, from), { replace: true });
     } catch (err: any) {
-      setServerError(err?.response?.data?.message || 'Invalid email or password');
+      // setServerError(err?.response?.data?.message || 'Invalid email or password');
+      setServerError(
+        err?.response?.status === 429
+          ? 'Too many attempts. Please wait a minute and try again.'
+          : err?.response?.data?.message || 'Invalid email or password'
+      );
     } finally {
       setIsPending(false);
     }
