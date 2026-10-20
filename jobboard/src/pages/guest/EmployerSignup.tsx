@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AlertCircle, Image as ImageIcon } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
+import { getErrorMessage } from '../../utils/apiError';
 
 const MAX_LOGO_BYTES = 900 * 1024; // 900kb
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
@@ -77,7 +78,9 @@ const EmployerSignup = () => {
       setRequiresCode(needsCode);
       setStep(2);
     } catch (err: any) {
-      setStep1Error(err?.response?.data?.message || 'Something went wrong');
+      // setStep1Error(err?.response?.data?.message || 'Something went wrong');
+
+      setStep1Error(getErrorMessage(err, 'Something went wrong'));
     } finally {
       setStep1Pending(false);
     }
@@ -119,7 +122,9 @@ const EmployerSignup = () => {
       await confirmEmployerSignup({ email, code, file: logoFile });
       navigate('/employers/dashboard');
     } catch (err: any) {
-      setStep2Error(err?.response?.data?.message || 'Failed to confirm signup');
+      // setStep2Error(err?.response?.data?.message || 'Failed to confirm signup');
+
+      setStep2Error(getErrorMessage(err, 'Failed to confirm signup'));
     } finally {
       setStep2Pending(false);
     }

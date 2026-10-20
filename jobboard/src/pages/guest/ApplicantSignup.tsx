@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AlertCircle, FileText } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
+import { getErrorMessage } from '../../utils/apiError';
 
 const MAX_RESUME_BYTES = 900 * 1024; // 900kb
 const ALLOWED_EXTENSIONS = ['.doc', '.docx', '.odt', '.pdf', '.rtf'];
@@ -76,7 +77,9 @@ const ApplicantSignup = () => {
       setRequiresCode(needsCode);
       setStep(2);
     } catch (err: any) {
-      setStep1Error(err?.response?.data?.message || 'Something went wrong');
+      // setStep1Error(err?.response?.data?.message || 'Something went wrong');
+
+      setStep1Error(getErrorMessage(err, 'Something went wrong'));
     } finally {
       setStep1Pending(false);
     }
@@ -123,7 +126,9 @@ const ApplicantSignup = () => {
       await confirmApplicantSignup({ email, code, file: resumeFile, allowView });
       navigate('/');
     } catch (err: any) {
-      setStep2Error(err?.response?.data?.message || 'Failed to confirm signup');
+      // setStep2Error(err?.response?.data?.message || 'Failed to confirm signup');
+
+      setStep2Error(getErrorMessage(err, 'Failed to confirm signup'));
     } finally {
       setStep2Pending(false);
     }

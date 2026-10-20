@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { getPostLoginTarget } from '../../utils/authRedirect';
+import { getErrorMessage } from '../../utils/apiError';
 
 const loginSchema = z.object({
   email: z.string().min(1, 'The Email field is required').email('Enter a valid email'),
@@ -43,11 +44,14 @@ const ApplicantLogin = () => {
       navigate(getPostLoginTarget(user, from), { replace: true });
     } catch (err: any) {
       // setServerError(err?.response?.data?.message || 'Invalid email or password');
-      setServerError(
-        err?.response?.status === 429
-          ? 'Too many attempts. Please wait a minute and try again.'
-          : err?.response?.data?.message || 'Invalid email or password'
-      );
+
+      // setServerError(
+      //   err?.response?.status === 429
+      //     ? 'Too many attempts. Please wait a minute and try again.'
+      //     : err?.response?.data?.message || 'Invalid email or password'
+      // );
+
+      setServerError(getErrorMessage(err, 'Invalid email or password'));
     } finally {
       setIsPending(false);
     }
