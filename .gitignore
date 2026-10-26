@@ -5,3 +5,4 @@ jobboard-api/.env
 
 .vercel
 .env*
+.continue
