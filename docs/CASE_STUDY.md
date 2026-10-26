@@ -37,7 +37,7 @@ React, Vite and TypeScript on the frontend, with Tailwind CSS, TanStack Query, Z
 
 ## Known limitations
 
-Email verification is off in the demo, and there is no password reset by email yet, since both need a verified sending domain. Uploaded resumes sit on a public disk under unguessable file names. There are no browser end-to-end tests yet.
+Email verification is off in the demo, and there is no password reset by email yet, since both need a verified sending domain. Uploaded resumes sit on a public disk under unguessable file names. One Playwright test drives the whole hiring flow in a browser (employer signs up and posts, applicant signs up with a resume and applies, employer accepts, applicant sees the decision). It runs against its own throwaway API and database, and a guard test aborts the run if the API ever points at data it didn’t create.
 
 ## How I worked
 
