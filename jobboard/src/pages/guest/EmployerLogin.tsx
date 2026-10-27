@@ -74,9 +74,9 @@ const EmployerLogin = () => {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-ink mb-1.5 block">Password</label>
+          <label htmlFor="login-password" className="text-sm font-medium text-ink mb-1.5 block">Password</label>
           <div className="relative">
-            <input {...register('password')} type={showPassword ? 'text' : 'password'}
+            <input id="login-password" {...register('password')} type={showPassword ? 'text' : 'password'}
               placeholder="Password"
               className={`${inputClass(!!errors.password)} pr-11`} />
             <button
