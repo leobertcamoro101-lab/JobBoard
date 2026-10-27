@@ -90,29 +90,29 @@ const ApplyModal = ({ job, onClose }: Props) => {
             />
 
             <div>
-              <label className="text-xs text-ink/60 mb-1 block">Phone</label>
-              <input {...register('phone')} placeholder="+63 912 345 6789" className={inputClass()} />
+              <label htmlFor='apply-phone' className="text-xs text-ink/60 mb-1 block">Phone</label>
+              <input id='apply-phone' {...register('phone')} placeholder="+63 912 345 6789" className={inputClass()} />
             </div>
 
             <div>
-              <label className="text-xs text-ink/60 mb-1 block">LinkedIn URL</label>
-              <input {...register('linkedin')} placeholder="https://linkedin.com/in/..."
+              <label htmlFor='apply-linkedin' className="text-xs text-ink/60 mb-1 block">LinkedIn URL</label>
+              <input id='apply-linkedin' {...register('linkedin')} placeholder="https://linkedin.com/in/..."
                 className={inputClass(!!errors.linkedin)} />
               {errors.linkedin && <p className="text-red-600 text-xs mt-1">{errors.linkedin.message}</p>}
             </div>
 
             <div>
-              <label className="text-xs text-ink/60 mb-1 block">Portfolio URL</label>
-              <input {...register('portfolio')} placeholder="https://yoursite.com"
+              <label htmlFor='apply-portfolio' className="text-xs text-ink/60 mb-1 block">Portfolio URL</label>
+              <input id='apply-portfolio' {...register('portfolio')} placeholder="https://yoursite.com"
                 className={inputClass(!!errors.portfolio)} />
               {errors.portfolio && <p className="text-red-600 text-xs mt-1">{errors.portfolio.message}</p>}
             </div>
 
             <div>
-              <label className="text-xs text-ink/60 mb-1 block">
+              <label htmlFor='apply-cover-letter' className="text-xs text-ink/60 mb-1 block">
                 Cover Letter * <span className="text-ink/40">(min 100 chars)</span>
               </label>
-              <textarea {...register('cover_letter')} rows={6}
+              <textarea id='apply-cover-letter' {...register('cover_letter')} rows={6}
                 placeholder="Tell us why you're a great fit for this role..."
                 className={`${inputClass(!!errors.cover_letter)} resize-none`} />
               {errors.cover_letter && (

@@ -47,13 +47,13 @@ const ApplicantIdentityField = ({ user, location, register, errors, inputClass }
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="text-xs text-ink/60 mb-1 block">Full Name *</label>
-          <input {...register('name')} placeholder="John Doe" className={inputClass(!!errors.name)} />
+          <label htmlFor='apply-name' className="text-xs text-ink/60 mb-1 block">Full Name *</label>
+          <input id='apply-name' {...register('name')} placeholder="John Doe" className={inputClass(!!errors.name)} />
           {errors.name && <p className="text-red-600 text-xs mt-1">{errors.name.message}</p>}
         </div>
         <div>
-          <label className="text-xs text-ink/60 mb-1 block">Email *</label>
-          <input {...register('email')} type="email" placeholder="john@example.com"
+          <label htmlFor='apply-email' className="text-xs text-ink/60 mb-1 block">Email *</label>
+          <input id='apply-email' {...register('email')} type="email" placeholder="john@example.com"
             className={inputClass(!!errors.email)} />
           {errors.email && <p className="text-red-600 text-xs mt-1">{errors.email.message}</p>}
         </div>

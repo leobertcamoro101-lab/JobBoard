@@ -63,8 +63,8 @@ const EmployerLogin = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <label className="text-sm font-medium text-ink mb-1.5 block">Email</label>
-          <input {...register('email')} type="email" placeholder="email@example.com"
+          <label htmlFor='login-email' className="text-sm font-medium text-ink mb-1.5 block">Email</label>
+          <input id='login-email' {...register('email')} type="email" placeholder="email@example.com"
             className={inputClass(!!errors.email)} />
           {errors.email && (
             <p className="flex items-center gap-1.5 text-red-600 text-sm mt-1.5">

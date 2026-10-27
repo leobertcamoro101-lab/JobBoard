@@ -136,22 +136,22 @@ const PostJobPage = () => {
           <h2 className="text-ink font-bold">Job Details</h2>
 
           <div>
-            <label className="text-xs text-ink/60 mb-1 block">Job Title *</label>
-            <input {...register('title')} placeholder="e.g. Senior React Developer"
+            <label htmlFor='job-title' className="text-xs text-ink/60 mb-1 block">Job Title *</label>
+            <input id='job-title' {...register('title')} placeholder="e.g. Senior React Developer"
               className={inputClass(!!errors.title)} />
             {errors.title && <p className="text-red-600 text-xs mt-1">{errors.title.message}</p>}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-ink/60 mb-1 block">Company *</label>
-              <input {...register('company')} placeholder="Your company name"
+              <label htmlFor='job-company' className="text-xs text-ink/60 mb-1 block">Company *</label>
+              <input id='job-company' {...register('company')} placeholder="Your company name"
                 className={inputClass(!!errors.company)} />
               {errors.company && <p className="text-red-600 text-xs mt-1">{errors.company.message}</p>}
             </div>
             <div>
-              <label className="text-xs text-ink/60 mb-1 block">Location *</label>
-              <input {...register('location')} placeholder="e.g. Cebu City or Remote"
+              <label htmlFor='job-location' className="text-xs text-ink/60 mb-1 block">Location *</label>
+              <input id='job-location' {...register('location')} placeholder="e.g. Cebu City or Remote"
                 className={inputClass(!!errors.location)} />
               {errors.location && <p className="text-red-600 text-xs mt-1">{errors.location.message}</p>}
             </div>
@@ -159,8 +159,8 @@ const PostJobPage = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-ink/60 mb-1 block">Job Type *</label>
-              <select {...register('type')} className={inputClass()}>
+              <label htmlFor='job-type' className="text-xs text-ink/60 mb-1 block">Job Type *</label>
+              <select id='job-type' {...register('type')} className={inputClass()}>
                 <option value="full-time">Full-time</option>
                 <option value="part-time">Part-time</option>
                 <option value="remote">Remote</option>
@@ -168,8 +168,8 @@ const PostJobPage = () => {
               </select>
             </div>
             <div>
-              <label className="text-xs text-ink/60 mb-1 block">Category *</label>
-              <select {...register('category')} className={inputClass()}>
+              <label htmlFor='job-category' className="text-xs text-ink/60 mb-1 block">Category *</label>
+              <select id='job-category' {...register('category')} className={inputClass()}>
                 {categoryOptions.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
@@ -180,20 +180,20 @@ const PostJobPage = () => {
           <h2 className="text-ink font-bold">Salary (Optional)</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-xs text-ink/60 mb-1 block">Currency</label>
-              <select {...register('currency')} className={inputClass()}>
+              <label htmlFor='job-currency' className="text-xs text-ink/60 mb-1 block">Currency</label>
+              <select id='job-currency' {...register('currency')} className={inputClass()}>
                 <option value="PHP">PHP</option>
                 <option value="USD">USD</option>
                 <option value="SGD">SGD</option>
               </select>
             </div>
             <div>
-              <label className="text-xs text-ink/60 mb-1 block">Min Salary</label>
-              <input {...register('salary_min')} placeholder="e.g. 50000" className={inputClass()} />
+              <label htmlFor='job-salary-min' className="text-xs text-ink/60 mb-1 block">Min Salary</label>
+              <input id='job-salary-min' {...register('salary_min')} placeholder="e.g. 50000" className={inputClass()} />
             </div>
             <div>
-              <label className="text-xs text-ink/60 mb-1 block">Max Salary</label>
-              <input {...register('salary_max')} placeholder="e.g. 80000" className={inputClass()} />
+              <label htmlFor='job-salary-min' className="text-xs text-ink/60 mb-1 block">Max Salary</label>
+              <input id='job-salary-min' {...register('salary_max')} placeholder="e.g. 80000" className={inputClass()} />
             </div>
           </div>
         </Card>
@@ -201,17 +201,17 @@ const PostJobPage = () => {
         <Card className= "space-y-4">
           <h2 className="text-ink font-bold">Description</h2>
           <div>
-            <label className="text-xs text-ink/60 mb-1 block">Job Description *</label>
-            <textarea {...register('description')} rows={6}
+            <label htmlFor='job-description' className="text-xs text-ink/60 mb-1 block">Job Description *</label>
+            <textarea id='job-description' {...register('description')} rows={6}
               placeholder="Describe the role, responsibilities, and what makes it exciting..."
               className={`${inputClass(!!errors.description)} resize-none`} />
             {errors.description && <p className="text-red-600 text-xs mt-1">{errors.description.message}</p>}
           </div>
           <div>
-            <label className="text-xs text-ink/60 mb-1 block">
+            <label htmlFor='job-requirements' className="text-xs text-ink/60 mb-1 block">
               Requirements <span className="text-ink/40">(one per line)</span>
             </label>
-            <textarea {...register('requirements')} rows={4}
+            <textarea id='job-requirements' {...register('requirements')} rows={4}
               placeholder="5+ years React experience&#10;TypeScript proficiency&#10;..."
               className={`${inputClass()} resize-none`} />
           </div>
@@ -220,8 +220,8 @@ const PostJobPage = () => {
         <Card >
           <h2 className="text-ink font-bold mb-4">Contact</h2>
           <div>
-            <label className="text-xs text-ink/60 mb-1 block">Application Email *</label>
-            <input {...register('apply_email')} type="email" placeholder="jobs@yourcompany.com"
+            <label htmlFor='job-apply-email' className="text-xs text-ink/60 mb-1 block">Application Email *</label>
+            <input id='job-apply-email' {...register('apply_email')} type="email" placeholder="jobs@yourcompany.com"
               className={inputClass(!!errors.apply_email)} />
             {errors.apply_email && <p className="text-red-600 text-xs mt-1">{errors.apply_email.message}</p>}
           </div>

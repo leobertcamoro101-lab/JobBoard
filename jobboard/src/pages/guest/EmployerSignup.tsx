@@ -154,15 +154,15 @@ const EmployerSignup = () => {
 
           <form onSubmit={handleSubmit(onStep1Submit)} className="space-y-5">
             <div>
-              <label className="text-sm font-medium text-ink mb-1.5 block">Email Address *</label>
-              <input {...register('email')} type="email" placeholder="Email Address"
+              <label htmlFor='signup-email' className="text-sm font-medium text-ink mb-1.5 block">Email Address *</label>
+              <input id='signup-email' {...register('email')} type="email" placeholder="Email Address"
                 className={inputClass(!!errors.email)} />
               <FieldError message={errors.email?.message} />
             </div>
 
             <div>
-              <label className="text-sm font-medium text-ink mb-1.5 block">Password *</label>
-              <input {...register('password')} type="password" placeholder="Password"
+              <label htmlFor='signup-password' className="text-sm font-medium text-ink mb-1.5 block">Password *</label>
+              <input id='signup-password' {...register('password')} type="password" placeholder="Password"
                 className={inputClass(!!errors.password)} />
               <p className="text-xs text-ink/40 mt-1.5">
                 Password must be at least ten (10) characters and should be a mix of uppercase and
@@ -172,46 +172,46 @@ const EmployerSignup = () => {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-ink mb-1.5 block">Confirm Password *</label>
-              <input {...register('confirmPassword')} type="password" placeholder="Confirm Password"
+              <label htmlFor='signup-confirm-password' className="text-sm font-medium text-ink mb-1.5 block">Confirm Password *</label>
+              <input id='signup-confirm-password' {...register('confirmPassword')} type="password" placeholder="Confirm Password"
                 className={inputClass(!!errors.confirmPassword)} />
               <FieldError message={errors.confirmPassword?.message} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-ink mb-1.5 block">First Name *</label>
-                <input {...register('firstName')} placeholder="First Name"
+                <label htmlFor='signup-first-name' className="text-sm font-medium text-ink mb-1.5 block">First Name *</label>
+                <input id='signup-first-name' {...register('firstName')} placeholder="First Name"
                   className={inputClass(!!errors.firstName)} />
                 <FieldError message={errors.firstName?.message} />
               </div>
               <div>
-                <label className="text-sm font-medium text-ink mb-1.5 block">Last Name *</label>
-                <input {...register('lastName')} placeholder="Last Name"
+                <label htmlFor='signup-last-name' className="text-sm font-medium text-ink mb-1.5 block">Last Name *</label>
+                <input id='signup-last-name' {...register('lastName')} placeholder="Last Name"
                   className={inputClass(!!errors.lastName)} />
                 <FieldError message={errors.lastName?.message} />
               </div>
             </div>
 
             <div>
-              <label className="text-sm font-medium text-ink mb-1.5 block">Mobile Number *</label>
-              <input {...register('mobileNumber')} placeholder="Mobile Number"
+              <label htmlFor='signup-mobile' className="text-sm font-medium text-ink mb-1.5 block">Mobile Number *</label>
+              <input id='signup-mobile' {...register('mobileNumber')} placeholder="Mobile Number"
                 className={inputClass(!!errors.mobileNumber)} />
               <FieldError message={errors.mobileNumber?.message} />
             </div>
 
             <div>
-              <label className="text-sm font-medium text-ink mb-1.5 block">Company Name *</label>
-              <input {...register('companyName')} placeholder="Company Name"
+              <label htmlFor='signup-company-name' className="text-sm font-medium text-ink mb-1.5 block">Company Name *</label>
+              <input id='signup-company-name' {...register('companyName')} placeholder="Company Name"
                 className={inputClass(!!errors.companyName)} />
               <FieldError message={errors.companyName?.message} />
             </div>
 
             <div>
-              <label className="text-sm font-medium text-ink mb-1.5 block">
+              <label htmlFor='signup-company-website' className="text-sm font-medium text-ink mb-1.5 block">
                 Company Website <span className="text-ink/40 font-normal">(optional)</span>
               </label>
-              <input {...register('companyWebsite')} placeholder="https://yourcompany.com"
+              <input id='signup-company-website' {...register('companyWebsite')} placeholder="https://yourcompany.com"
                 className={inputClass(!!errors.companyWebsite)} />
               <FieldError message={errors.companyWebsite?.message} />
             </div>
@@ -264,8 +264,8 @@ const EmployerSignup = () => {
             <p className="text-sm text-ink mb-3">
               Please enter the code sent to <span className="font-semibold">{email}</span>
             </p>
-            <label className="text-sm font-medium text-ink mb-1.5 block">Confirmation Code *</label>
-            <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="Confirmation Code"
+            <label htmlFor="signup-code" className="text-sm font-medium text-ink mb-1.5 block">Confirmation Code *</label>
+            <input id="signup-code" value={code} onChange={(e) => setCode(e.target.value)} placeholder="Confirmation Code"
               className={inputClass(!!codeError)} />
             <FieldError message={codeError} />
           </div>

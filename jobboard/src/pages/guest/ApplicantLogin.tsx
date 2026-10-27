@@ -63,8 +63,8 @@ const ApplicantLogin = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <label className="text-sm font-medium text-ink mb-1.5 block">Email</label>
-          <input {...register('email')} type="email" placeholder="email@example.com"
+          <label htmlFor='login-email' className="text-sm font-medium text-ink mb-1.5 block">Email</label>
+          <input id='login-email' {...register('email')} type="email" placeholder="email@example.com"
             className={inputClass(!!errors.email)} />
           {errors.email && (
             <p className="flex items-center gap-1.5 text-red-600 text-sm mt-1.5">
@@ -74,9 +74,9 @@ const ApplicantLogin = () => {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-ink mb-1.5 block">Password</label>
+          <label htmlFor='login-password' className="text-sm font-medium text-ink mb-1.5 block">Password</label>
           <div className="relative">
-            <input {...register('password')} type={showPassword ? 'text' : 'password'}
+            <input id='login-password' {...register('password')} type={showPassword ? 'text' : 'password'}
               placeholder="Password"
               className={`${inputClass(!!errors.password)} pr-11`} />
             <button

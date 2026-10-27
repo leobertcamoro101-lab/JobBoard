@@ -96,9 +96,9 @@ const ChangePasswordPage = () => {
       <Card>
         <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-5">
           <div>
-            <label className="text-sm font-medium text-ink mb-1.5 block">Current password</label>
+            <label htmlFor='cp-current' className="text-sm font-medium text-ink mb-1.5 block">Current password</label>
             <div className="relative">
-              <input {...register('current_password')} type={type} autoComplete="current-password"
+              <input id='cp-current' {...register('current_password')} type={type} autoComplete="current-password"
                 className={inputClass(!!errors.current_password)} />
               {toggle}
             </div>
@@ -106,8 +106,8 @@ const ChangePasswordPage = () => {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-ink mb-1.5 block">New password</label>
-            <input {...register('password')} type={type} autoComplete="new-password"
+            <label htmlFor='cp-new' className="text-sm font-medium text-ink mb-1.5 block">New password</label>
+            <input id='cp-new' {...register('password')} type={type} autoComplete="new-password"
               className={inputClass(!!errors.password)} />
             <p className="text-xs text-ink/40 mt-1.5">
               At least ten (10) characters, with uppercase and lowercase letters, a number and punctuation.
@@ -116,8 +116,8 @@ const ChangePasswordPage = () => {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-ink mb-1.5 block">Confirm new password</label>
-            <input {...register('password_confirmation')} type={type} autoComplete="new-password"
+            <label htmlFor='cp-confirm' className="text-sm font-medium text-ink mb-1.5 block">Confirm new password</label>
+            <input id='cp-confirm' {...register('password_confirmation')} type={type} autoComplete="new-password"
               className={inputClass(!!errors.password_confirmation)} />
             <FieldError message={errors.password_confirmation?.message} />
           </div>

@@ -147,50 +147,50 @@ const ProfilePage = () => {
       <Card>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
-            <label className="text-sm font-medium text-ink mb-1.5 block">Email</label>
-            <input value={user.email} disabled
+            <label htmlFor='profile-email' className="text-sm font-medium text-ink mb-1.5 block">Email</label>
+            <input id='profile-email' value={user.email} disabled
               className="w-full bg-hairline/40 border border-hairline text-ink/60 text-sm rounded-xl px-4 py-3" />
             <p className="text-xs text-ink/40 mt-1.5">Your email is your login and can't be changed here.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-ink mb-1.5 block">First Name</label>
-              <input {...register('first_name')} className={inputClass(!!errors.first_name)} />
+              <label htmlFor='profile-first-name' className="text-sm font-medium text-ink mb-1.5 block">First Name</label>
+              <input id='profile-first-name' {...register('first_name')} className={inputClass(!!errors.first_name)} />
               <FieldError message={errors.first_name?.message} />
             </div>
             <div>
-              <label className="text-sm font-medium text-ink mb-1.5 block">Last Name</label>
-              <input {...register('last_name')} className={inputClass(!!errors.last_name)} />
+              <label htmlFor='profile-last-name' className="text-sm font-medium text-ink mb-1.5 block">Last Name</label>
+              <input id='profile-last-name' {...register('last_name')} className={inputClass(!!errors.last_name)} />
               <FieldError message={errors.last_name?.message} />
             </div>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-ink mb-1.5 block">Mobile Number</label>
-            <input {...register('mobile_number')} className={inputClass(!!errors.mobile_number)} />
+            <label htmlFor='profile-mobile' className="text-sm font-medium text-ink mb-1.5 block">Mobile Number</label>
+            <input id='profile-mobile' {...register('mobile_number')} className={inputClass(!!errors.mobile_number)} />
             <FieldError message={errors.mobile_number?.message} />
           </div>
 
           {isEmployer ? (
             <>
               <div>
-                <label className="text-sm font-medium text-ink mb-1.5 block">Company Name</label>
-                <input {...register('company_name')} className={inputClass(!!errors.company_name)} />
+                <label htmlFor='profile-company-name' className="text-sm font-medium text-ink mb-1.5 block">Company Name</label>
+                <input id='profile-company-name' {...register('company_name')} className={inputClass(!!errors.company_name)} />
                 <FieldError message={errors.company_name?.message} />
               </div>
 
               <div>
-                <label className="text-sm font-medium text-ink mb-1.5 block">
+                <label htmlFor='profile-company-website' className="text-sm font-medium text-ink mb-1.5 block">
                   Company Website <span className="text-ink/40 font-normal">(optional)</span>
                 </label>
-                <input {...register('company_website')} placeholder="https://yourcompany.com"
+                <input id='profile-company-website' {...register('company_website')} placeholder="https://yourcompany.com"
                   className={inputClass(!!errors.company_website)} />
                 <FieldError message={errors.company_website?.message} />
               </div>
 
               <div>
-                <label className="text-sm font-medium text-ink mb-2 block">Company Logo</label>
+                <p className="text-sm font-medium text-ink mb-2 block">Company Logo</p>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                   {currentLogo && !removeLogo ? (
                     <img src={currentLogo} alt="Company logo"
@@ -219,7 +219,7 @@ const ProfilePage = () => {
             </>
           ) : (
             <div>
-              <label className="text-sm font-medium text-ink mb-2 block">Resume</label>
+              <p className="text-sm font-medium text-ink mb-2 block">Resume</p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <span className="text-sm text-ink/50 flex-1 break-all">
                   {file ? file.name : currentResume ? (

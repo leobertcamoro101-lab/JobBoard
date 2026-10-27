@@ -32,6 +32,7 @@ const SearchFilters = ({ onFilter, total }: Props) => {
       <form onSubmit={handleSearch}>
         <div className="flex gap-3 mb-4">
           <input
+            aria-label="Search jobs or companies"
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -48,14 +49,14 @@ const SearchFilters = ({ onFilter, total }: Props) => {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <select value={type} onChange={e => { setType(e.target.value); onFilter({ search, type: e.target.value, category }); }}
+          <select aria-label="Filter by job type" value={type} onChange={e => { setType(e.target.value); onFilter({ search, type: e.target.value, category }); }}
             className="bg-paper border border-hairline text-ink/70 text-xs
                        rounded-xl px-3 py-2 outline-none focus:border-evergreen transition-colors">
             <option value="">All Types</option>
             {TYPES.map(t => <option key={t} value={t} className="capitalize">{t}</option>)}
           </select>
 
-          <select value={category} onChange={e => { setCategory(e.target.value); onFilter({ search, type, category: e.target.value }); }}
+          <select aria-label="Filter by category" value={category} onChange={e => { setCategory(e.target.value); onFilter({ search, type, category: e.target.value }); }}
             className="bg-paper border border-hairline text-ink/70 text-xs
                        rounded-xl px-3 py-2 outline-none focus:border-evergreen transition-colors">
             <option value="">All Categories</option>
