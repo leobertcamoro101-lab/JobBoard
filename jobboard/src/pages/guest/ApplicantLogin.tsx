@@ -1,23 +1,32 @@
-import { useState } from 'react';
-import { Link, useLocation, useNavigate, type Location } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { useAuthStore } from '../../stores/authStore';
-import { getPostLoginTarget } from '../../utils/authRedirect';
-import { getErrorMessage } from '../../utils/apiError';
+import { useState } from "react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  type Location,
+} from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Eye, EyeOff } from "lucide-react";
+import FieldError, { fieldA11y } from "../../components/FieldError";
+import { useAuthStore } from "../../stores/authStore";
+import { getPostLoginTarget } from "../../utils/authRedirect";
+import { getErrorMessage } from "../../utils/apiError";
 
 const loginSchema = z.object({
-  email: z.string().min(1, 'The Email field is required').email('Enter a valid email'),
-  password: z.string().min(1, 'The Password field is required'),
+  email: z
+    .string()
+    .min(1, "The Email field is required")
+    .email("Enter a valid email"),
+  password: z.string().min(1, "The Password field is required"),
   remember: z.boolean().optional(),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
 
 const inputClass = (hasError?: boolean) =>
-  `w-full bg-paper border ${hasError ? 'border-red-400' : 'border-hairline'}
+  `w-full bg-paper border ${hasError ? "border-red-400" : "border-hairline"}
    text-ink text-sm rounded-xl px-4 py-3 outline-none focus:border-evergreen
    transition-colors placeholder-ink/40`;
 
@@ -28,16 +37,20 @@ const ApplicantLogin = () => {
   const login = useAuthStore((s) => s.login);
 
   const [showPassword, setShowPassword] = useState(false);
-  const [serverError, setServerError] = useState('');
+  const [serverError, setServerError] = useState("");
   const [isPending, setIsPending] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '', remember: false },
+    defaultValues: { email: "", password: "", remember: false },
   });
 
   const onSubmit = async (data: LoginForm) => {
-    setServerError('');
+    setServerError("");
     setIsPending(true);
     try {
       const user = await login(data);
@@ -51,7 +64,7 @@ const ApplicantLogin = () => {
       //     : err?.response?.data?.message || 'Invalid email or password'
       // );
 
-      setServerError(getErrorMessage(err, 'Invalid email or password'));
+      setServerError(getErrorMessage(err, "Invalid email or password"));
     } finally {
       setIsPending(false);
     }
@@ -63,45 +76,68 @@ const ApplicantLogin = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <label htmlFor='login-email' className="text-sm font-medium text-ink mb-1.5 block">Email</label>
-          <input id='login-email' {...register('email')} type="email" placeholder="email@example.com"
-            className={inputClass(!!errors.email)} />
+          <label
+            htmlFor="login-email"
+            className="text-sm font-medium text-ink mb-1.5 block"
+          >
+            Email
+          </label>
+          <input
+            id="login-email"
+            {...register("email")}
+            {...fieldA11y("login-email", errors.email?.message)}
+            type="email"
+            placeholder="email@example.com"
+            className={inputClass(!!errors.email)}
+          />
           {errors.email && (
-            <p className="flex items-center gap-1.5 text-red-600 text-sm mt-1.5">
-              <AlertCircle size={14} /> {errors.email.message}
-            </p>
+            <FieldError id="login-email" message={errors.email?.message} />
           )}
         </div>
 
         <div>
-          <label htmlFor='login-password' className="text-sm font-medium text-ink mb-1.5 block">Password</label>
+          <label
+            htmlFor="login-password"
+            className="text-sm font-medium text-ink mb-1.5 block"
+          >
+            Password
+          </label>
           <div className="relative">
-            <input id='login-password' {...register('password')} type={showPassword ? 'text' : 'password'}
+            <input
+              id="login-password"
+              {...register("password")}
+              {...fieldA11y("login-password", errors.password?.message)}
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className={`${inputClass(!!errors.password)} pr-11`} />
+              className={`${inputClass(!!errors.password)} pr-11`}
+            />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/40 hover:text-ink/70 transition-colors"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
           {errors.password && (
-            <p className="flex items-center gap-1.5 text-red-600 text-sm mt-1.5">
-              <AlertCircle size={14} /> {errors.password.message}
-            </p>
+            <FieldError id="login-password" message={errors.password?.message} />
           )}
         </div>
 
         <div className="flex items-center justify-between">
           <label className="flex items-center gap-2 text-sm text-ink cursor-pointer">
-            <input {...register('remember')} type="checkbox"
-              className="w-4 h-4 rounded border-hairline text-evergreen focus:ring-evergreen accent-evergreen" />
+            <input
+              {...register("remember")}
+              type="checkbox"
+              className="w-4 h-4 rounded border-hairline text-evergreen focus:ring-evergreen accent-evergreen"
+            />
             Keep Me Logged In
           </label>
-          <Link to="/applicants/forgot-password" className="text-sm font-medium text-evergreen hover:text-evergreen-dark">
+          <Link
+            to="/applicants/forgot-password"
+            className="text-sm font-medium text-evergreen hover:text-evergreen-dark"
+          >
             Forgot Password
           </Link>
         </div>
@@ -112,15 +148,21 @@ const ApplicantLogin = () => {
           </div>
         )}
 
-        <button type="submit" disabled={isPending}
+        <button
+          type="submit"
+          disabled={isPending}
           className="w-full bg-evergreen hover:bg-evergreen-dark disabled:opacity-50
-                     text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2">
-          {isPending ? 'Logging in...' : <>Log In →</>}
+                     text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
+        >
+          {isPending ? "Logging in..." : <>Log In →</>}
         </button>
 
         <p className="text-center text-sm text-ink/60">
-          Don't have an account?{' '}
-          <Link to="/applicants/signup" className="font-medium text-evergreen hover:text-evergreen-dark">
+          Don't have an account?{" "}
+          <Link
+            to="/applicants/signup"
+            className="font-medium text-evergreen hover:text-evergreen-dark"
+          >
             Sign up
           </Link>
         </p>

@@ -24,3 +24,12 @@ test('the home page search controls have names', async ({ page }) => {
   await expect(page.getByRole('combobox', { name: 'Filter by job type' })).toBeVisible();
   await expect(page.getByRole('combobox', { name: 'Filter by category' })).toBeVisible();
 });
+
+test('login errors are tied to their fields', async ({ page }) => {
+  await page.goto('/applicants');
+  await page.getByRole('button', { name: /Log In/ }).click();
+
+  const email = page.getByLabel('Email', { exact: true });
+  await expect(email).toHaveAttribute('aria-invalid', 'true');
+  await expect(email).toHaveAccessibleDescription(/email/i);
+});
