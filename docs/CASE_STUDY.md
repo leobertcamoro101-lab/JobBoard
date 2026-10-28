@@ -30,7 +30,11 @@ React, Vite and TypeScript on the frontend, with Tailwind CSS, TanStack Query, Z
 
 ## Quality and safety
 
-- **[Tests: 45 passed] feature tests** run against a real PostgreSQL database: ownership rules, applying, signup, profile and password changes. The base test class refuses to run unless the database name ends in `_test` and the host is local, so a misconfigured run can never wipe development or production data.
+- **[Tests: 45 passed] feature tests** run against a real PostgreSQL database: ownership rules, applying, signup, profile and password changes. The base test class refuses to run unless the database name ends in `_test` and the host is local, so a misconfigured run can never wipe development or production data. 
+- Wrote a Playwright end-to-end test covering the full hiring flow, and ran it in GitHub Actions alongside [45] API feature tests on every push. 
+- Isolated end-to-end runs on a throwaway Postgres database and API, with a guard that aborts if they ever touch real data.
+- Form labels and error messages are programmatically linked to their fields, and Playwright tests check it.
+
 - **CI** runs the API tests on a Postgres service container and type-checks and builds the frontend on every push.
 - **Rate limiting** applies to login, signup, code confirmation and resend, keyed by email and IP. That needed two production settings: trusting Railway's proxy so Laravel sees real visitor IPs, and a persistent cache store, since counters on the `array` store reset on every request.
 - **Passwords and uploads:** strength rules are enforced on the client and the server. Changing a password requires the current one and signs out other devices. Uploads are validated by type and size, and replaced files are deleted.

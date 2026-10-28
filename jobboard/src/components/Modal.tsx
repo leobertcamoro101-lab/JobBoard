@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import Card from './Card';
 
 interface ModalProps {
@@ -9,6 +9,13 @@ interface ModalProps {
 }
 
 const Modal = ({ onClose, children, maxWidth = 'max-w-lg', cardClassName = '' }: ModalProps) => {
+  
+  useEffect(() => {
+  const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+  document.addEventListener('keydown', onKey);
+  return () => document.removeEventListener('keydown', onKey);
+
+}, [onClose]);
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-sm"
