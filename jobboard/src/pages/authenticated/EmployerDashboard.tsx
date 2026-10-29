@@ -205,11 +205,12 @@ const EmployerDashboard = () => {
 
       {deleteTarget && (
         <Modal
+          labelledBy="delete-title"
           onClose={() => setDeleteTarget(null)}
           maxWidth="max-w-sm"
           cardClassName="p-6 sm:p-6 max-h-none"
         >
-          <h3 className="text-ink font-bold text-lg mb-2">Delete this job?</h3>
+          <h3 id="delete-title" className="text-ink font-bold text-lg mb-2">Delete this job?</h3>
           <p className="text-ink/60 text-sm mb-1 break-words">
             "{deleteTarget.title}"
           </p>

@@ -3,6 +3,7 @@ import type { Location } from "react-router-dom";
 import type { FieldErrors, UseFormRegister } from "react-hook-form";
 import type { User } from "../types";
 import type { ApplyForm } from "../schemas/applySchema";
+import FieldError, { fieldA11y } from "./FieldError";
 
 interface Props {
   user: User | null;
@@ -12,13 +13,7 @@ interface Props {
   inputClass: (hasError?: boolean) => string;
 }
 
-const ApplicantIdentityField = ({
-  user,
-  location,
-  register,
-  errors,
-  inputClass,
-}: Props) => {
+const ApplicantIdentityField = ({ user, location, register, errors, inputClass }: Props) => {
   const isApplicant = user?.role === "applicant";
   const profile = user?.applicant_profile;
 
@@ -44,11 +39,8 @@ const ApplicantIdentityField = ({
       {!user && (
         <p className="text-ink/60 text-xs">
           Have an account?{" "}
-          <Link
-            to="/applicants"
-            state={{ from: location }}
-            className="text-evergreen hover:text-evergreen-dark font-medium"
-          >
+          <Link to="/applicants" state={{ from: location }}
+            className="text-evergreen hover:text-evergreen-dark font-medium">
             Log in
           </Link>{" "}
           to apply faster.
@@ -56,39 +48,16 @@ const ApplicantIdentityField = ({
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label
-            htmlFor="apply-name"
-            className="text-xs text-ink/60 mb-1 block"
-          >
-            Full Name *
-          </label>
-          <input
-            id="apply-name"
-            {...register("name")}
-            placeholder="John Doe"
-            className={inputClass(!!errors.name)}
-          />
-          {errors.name && (
-            <p className="text-red-600 text-xs mt-1">{errors.name.message}</p>
-          )}
+          <label htmlFor="apply-name" className="text-xs text-ink/60 mb-1 block">Full Name *</label>
+          <input id="apply-name" {...register("name")} {...fieldA11y("apply-name", errors.name?.message)}
+            placeholder="John Doe" className={inputClass(!!errors.name)} />
+          <FieldError compact id="apply-name" message={errors.name?.message} />
         </div>
         <div>
-          <label
-            htmlFor="apply-email"
-            className="text-xs text-ink/60 mb-1 block"
-          >
-            Email *
-          </label>
-          <input
-            id="apply-email"
-            {...register("email")}
-            type="email"
-            placeholder="john@example.com"
-            className={inputClass(!!errors.email)}
-          />
-          {errors.email && (
-            <p className="text-red-600 text-xs mt-1">{errors.email.message}</p>
-          )}
+          <label htmlFor="apply-email" className="text-xs text-ink/60 mb-1 block">Email *</label>
+          <input id="apply-email" {...register("email")} {...fieldA11y("apply-email", errors.email?.message)}
+            type="email" placeholder="john@example.com" className={inputClass(!!errors.email)} />
+          <FieldError compact id="apply-email" message={errors.email?.message} />
         </div>
       </div>
     </>

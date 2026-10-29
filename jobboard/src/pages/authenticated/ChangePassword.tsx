@@ -172,6 +172,7 @@ const ChangePasswordPage = () => {
 
           {mutation.isSuccess && (
             <div
+              role="status"
               className="flex items-center gap-2 bg-evergreen/10 border border-evergreen/20 text-evergreen
                             rounded-xl px-4 py-3 text-sm"
             >
@@ -180,7 +181,7 @@ const ChangePasswordPage = () => {
           )}
 
           {showServerBanner && (
-            <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+            <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
               ⚠️{" "}
               {(mutation.error as any)?.response?.data?.message ||
                 "Something went wrong. Please try again."}

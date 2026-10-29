@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import FieldError, { fieldA11y } from "../../components/FieldError";
 import { createJob, getJob, updateJob } from "../../api/client";
 import { useAuthStore } from "../../stores/authStore";
 import Card from "../../components/Card";
@@ -119,7 +120,7 @@ const PostJobPage = () => {
   if (isEdit && (jobError || !job)) {
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-        <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 text-sm">
+        <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 text-sm">
           ⚠️ Job not found.
         </div>
       </div>
@@ -171,14 +172,11 @@ const PostJobPage = () => {
             <input
               id="job-title"
               {...register("title")}
+              {...fieldA11y('job-title', errors.title?.message)}
               placeholder="e.g. Senior React Developer"
               className={inputClass(!!errors.title)}
             />
-            {errors.title && (
-              <p className="text-red-600 text-xs mt-1">
-                {errors.title.message}
-              </p>
-            )}
+            <FieldError compact id="job-title" message={errors.title?.message} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -192,14 +190,11 @@ const PostJobPage = () => {
               <input
                 id="job-company"
                 {...register("company")}
+                {...fieldA11y('job-company', errors.company?.message)}
                 placeholder="Your company name"
                 className={inputClass(!!errors.company)}
               />
-              {errors.company && (
-                <p className="text-red-600 text-xs mt-1">
-                  {errors.company.message}
-                </p>
-              )}
+              <FieldError compact id="job-company" message={errors.company?.message} />
             </div>
             <div>
               <label
@@ -211,14 +206,11 @@ const PostJobPage = () => {
               <input
                 id="job-location"
                 {...register("location")}
+                {...fieldA11y('job-location', errors.location?.message)}
                 placeholder="e.g. Cebu City or Remote"
                 className={inputClass(!!errors.location)}
               />
-              {errors.location && (
-                <p className="text-red-600 text-xs mt-1">
-                  {errors.location.message}
-                </p>
-              )}
+               <FieldError compact id="job-company" message={errors.location?.message} />
             </div>
           </div>
 
@@ -263,7 +255,7 @@ const PostJobPage = () => {
           </div>
         </Card>
 
-        <Card>
+        <Card className="space-y-4">
           <h2 className="text-ink font-bold">Salary (Optional)</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
@@ -299,13 +291,13 @@ const PostJobPage = () => {
             </div>
             <div>
               <label
-                htmlFor="job-salary-min"
+                htmlFor="job-salary-max"
                 className="text-xs text-ink/60 mb-1 block"
               >
                 Max Salary
               </label>
               <input
-                id="job-salary-min"
+                id="job-salary-max"
                 {...register("salary_max")}
                 placeholder="e.g. 80000"
                 className={inputClass()}
@@ -326,15 +318,12 @@ const PostJobPage = () => {
             <textarea
               id="job-description"
               {...register("description")}
+              {...fieldA11y('job-description', errors.description?.message)}
               rows={6}
               placeholder="Describe the role, responsibilities, and what makes it exciting..."
               className={`${inputClass(!!errors.description)} resize-none`}
             />
-            {errors.description && (
-              <p className="text-red-600 text-xs mt-1">
-                {errors.description.message}
-              </p>
-            )}
+            <FieldError compact id="job-description" message={errors.description?.message} />
           </div>
           <div>
             <label
@@ -353,7 +342,7 @@ const PostJobPage = () => {
           </div>
         </Card>
 
-        <Card>
+        <Card className="space-y-4">
           <h2 className="text-ink font-bold mb-4">Contact</h2>
           <div>
             <label
@@ -365,20 +354,17 @@ const PostJobPage = () => {
             <input
               id="job-apply-email"
               {...register("apply_email")}
+              {...fieldA11y('job-apply-email', errors.apply_email?.message)}
               type="email"
               placeholder="jobs@yourcompany.com"
               className={inputClass(!!errors.apply_email)}
             />
-            {errors.apply_email && (
-              <p className="text-red-600 text-xs mt-1">
-                {errors.apply_email.message}
-              </p>
-            )}
+            <FieldError compact id="job-apply-email" message={errors.apply_email?.message} />
           </div>
         </Card>
 
         {mutation.error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl px-4 py-3 text-sm">
+          <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-2xl px-4 py-3 text-sm">
             ⚠️{" "}
             {(mutation.error as any)?.response?.data?.message ||
               (isEdit

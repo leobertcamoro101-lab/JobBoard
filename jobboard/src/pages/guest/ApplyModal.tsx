@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import FieldError, { fieldA11y } from "../../components/FieldError";
 import { applyForJob } from "../../api/client";
 import { useAuthStore } from "../../stores/authStore";
 import type { Job } from "../../types";
@@ -56,16 +57,18 @@ const ApplyModal = ({ job, onClose }: Props) => {
 
   return (
     <>
-      <Modal onClose={onClose} maxWidth="max-w-lg">
+      <Modal onClose={onClose} maxWidth="max-w-lg" labelledBy="apply-title">
         <div className="p-5 sm:p-6 border-b border-hairline flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="text-ink font-bold text-lg break-words">
+            <h2 id="apply-title" className="text-ink font-bold text-lg break-words">
               Apply for {job.title}
             </h2>
             <p className="text-ink/60 text-sm">{job.company}</p>
           </div>
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close"
             className="text-ink/40 hover:text-ink text-2xl shrink-0"
           >
             ×
@@ -94,7 +97,9 @@ const ApplyModal = ({ job, onClose }: Props) => {
                 </Link>
               )}
               <button
+                type="button"
                 onClick={onClose}
+                aria-label="Close"
                 className="w-full sm:w-auto bg-evergreen hover:bg-evergreen-dark text-white font-bold
                              px-8 py-3 rounded-xl transition-colors"
               >
@@ -140,14 +145,11 @@ const ApplyModal = ({ job, onClose }: Props) => {
               <input
                 id="apply-linkedin"
                 {...register("linkedin")}
+                {...fieldA11y('apply-linkedin', errors.linkedin?.message)}
                 placeholder="https://linkedin.com/in/..."
                 className={inputClass(!!errors.linkedin)}
               />
-              {errors.linkedin && (
-                <p className="text-red-600 text-xs mt-1">
-                  {errors.linkedin.message}
-                </p>
-              )}
+              <FieldError compact id="apply-linkedin" message={errors.linkedin?.message} />
             </div>
 
             <div>
@@ -160,14 +162,11 @@ const ApplyModal = ({ job, onClose }: Props) => {
               <input
                 id="apply-portfolio"
                 {...register("portfolio")}
+                {...fieldA11y('apply-portfolio', errors.portfolio?.message)}
                 placeholder="https://yoursite.com"
                 className={inputClass(!!errors.portfolio)}
               />
-              {errors.portfolio && (
-                <p className="text-red-600 text-xs mt-1">
-                  {errors.portfolio.message}
-                </p>
-              )}
+              <FieldError compact id="apply-portfolio" message={errors.portfolio?.message} />
             </div>
 
             <div>
@@ -181,19 +180,16 @@ const ApplyModal = ({ job, onClose }: Props) => {
               <textarea
                 id="apply-cover-letter"
                 {...register("cover_letter")}
+                {...fieldA11y('apply-cover-letter', errors.cover_letter?.message)}
                 rows={6}
                 placeholder="Tell us why you're a great fit for this role..."
                 className={`${inputClass(!!errors.cover_letter)} resize-none`}
               />
-              {errors.cover_letter && (
-                <p className="text-red-600 text-xs mt-1">
-                  {errors.cover_letter.message}
-                </p>
-              )}
+              <FieldError compact id="apply-cover-letter" message={errors.cover_letter?.message} />
             </div>
 
             {mutation.error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+              <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
                 ⚠️{" "}
                 {(mutation.error as any)?.response?.data?.message ||
                   "Failed to submit"}

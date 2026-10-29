@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { expectNoDuplicateIds } from './helpers';
 
 test('login pages label their fields', async ({ page }) => {
   for (const path of ['/applicants', '/employers']) {
@@ -32,4 +33,25 @@ test('login errors are tied to their fields', async ({ page }) => {
   const email = page.getByLabel('Email', { exact: true });
   await expect(email).toHaveAttribute('aria-invalid', 'true');
   await expect(email).toHaveAccessibleDescription(/email/i);
+});
+
+test('signup errors are tied to their fields', async ({ page }) => {
+  await page.goto('/applicants/signup');
+  await expectNoDuplicateIds(page);
+  await page.getByRole('button', { name: /Next/ }).click();
+
+  const email = page.getByLabel(/^Email Address/);
+  await expect(email).toHaveAttribute('aria-invalid', 'true');
+  await expect(email).toHaveAccessibleDescription(/email/i);
+});
+
+test('modals are named and close with Escape', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('a[href^="/jobs/"]').first().click();
+  await page.getByRole('button', { name: /Apply Now/ }).click();
+
+  const dialog = page.getByRole('dialog', { name: /Apply for/ });
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
 });

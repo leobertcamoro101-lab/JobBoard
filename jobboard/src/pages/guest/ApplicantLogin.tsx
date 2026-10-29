@@ -56,14 +56,6 @@ const ApplicantLogin = () => {
       const user = await login(data);
       navigate(getPostLoginTarget(user, from), { replace: true });
     } catch (err: any) {
-      // setServerError(err?.response?.data?.message || 'Invalid email or password');
-
-      // setServerError(
-      //   err?.response?.status === 429
-      //     ? 'Too many attempts. Please wait a minute and try again.'
-      //     : err?.response?.data?.message || 'Invalid email or password'
-      // );
-
       setServerError(getErrorMessage(err, "Invalid email or password"));
     } finally {
       setIsPending(false);
@@ -143,7 +135,7 @@ const ApplicantLogin = () => {
         </div>
 
         {serverError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+          <div role='alert' className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
             ⚠️ {serverError}
           </div>
         )}

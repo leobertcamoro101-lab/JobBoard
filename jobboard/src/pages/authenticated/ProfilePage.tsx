@@ -36,13 +36,6 @@ const inputClass = (hasError?: boolean) =>
    text-ink text-sm rounded-xl px-4 py-3 outline-none focus:border-evergreen
    transition-colors placeholder-ink/40`;
 
-// const FieldError = ({ message }: { message?: string }) =>
-//   message ? (
-//     <p className="flex items-center gap-1.5 text-red-600 text-sm mt-1.5">
-//       <AlertCircle size={14} /> {message}
-//     </p>
-//   ) : null;
-
 const ProfilePage = () => {
   const user = useAuthStore((s) => s.user);
   const isEmployer = user?.role === "employer";
@@ -185,7 +178,6 @@ const ProfilePage = () => {
             </label>
             <input
               id="profile-email"
-              // {...fieldA11y('profile-email', errors.email?.message)}
               value={user.email}
               disabled
               className="w-full bg-hairline/40 border border-hairline text-ink/60 text-sm rounded-xl px-4 py-3"
@@ -259,7 +251,7 @@ const ProfilePage = () => {
                   {...fieldA11y('profile-company-name', errors.company_name?.message)}
                   className={inputClass(!!errors.company_name)}
                 />
-                <FieldError message={errors.company_name?.message} />
+                <FieldError id="profile-company-name" message={errors.company_name?.message} />
               </div>
 
               <div>
@@ -273,7 +265,7 @@ const ProfilePage = () => {
                 <input
                   id="profile-company-website"
                   {...register("company_website")}
-                  {...fieldA11y('profile-company-name', errors.company_website?.message)}
+                  {...fieldA11y('profile-company-website', errors.company_website?.message)}
                   placeholder="https://yourcompany.com"
                   className={inputClass(!!errors.company_website)}
                 />
@@ -388,7 +380,7 @@ const ProfilePage = () => {
           )}
 
           {showServerBanner && (
-            <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+            <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
               ⚠️{" "}
               {(mutation.error as any)?.response?.data?.message ||
                 "Something went wrong. Please try again."}

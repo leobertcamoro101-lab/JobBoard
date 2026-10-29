@@ -285,7 +285,7 @@ const ApplicantSignup = () => {
             </div>
 
             {step1Error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+              <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
                 ⚠️ {step1Error}
               </div>
             )}
@@ -324,9 +324,9 @@ const ApplicantSignup = () => {
       ) : (
         <form onSubmit={handleStep2Submit} className="space-y-6">
           <div>
-            <label className="text-sm font-medium text-ink mb-2 block">
+            <p className="text-sm font-medium text-ink mb-2 block">
               Resume *
-            </label>
+            </p>
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <span className="text-sm text-ink/50 flex-1">
                 {resumeFile ? resumeFile.name : "No Resume Selected..."}
@@ -349,7 +349,7 @@ const ApplicantSignup = () => {
               Only files with {ALLOWED_EXTENSIONS.join(", ")} extensions less
               than 900kb are allowed
             </p>
-            <FieldError message={fileError} />
+            <FieldError alert message={fileError} />
           </div>
 
           <label className="flex items-start gap-2 text-sm text-ink cursor-pointer">
@@ -387,12 +387,12 @@ const ApplicantSignup = () => {
                 placeholder="Confirmation Code"
                 className={inputClass(!!codeError)}
               />
-              <FieldError message={codeError} />
+              <FieldError id="signup-code" message={codeError} />
             </div>
           )}
 
           {step2Error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+            <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
               ⚠️ {step2Error}
             </div>
           )}
