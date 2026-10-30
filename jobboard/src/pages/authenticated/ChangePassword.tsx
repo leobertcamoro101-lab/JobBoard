@@ -38,13 +38,6 @@ const inputClass = (hasError?: boolean) =>
    text-ink text-sm rounded-xl px-4 py-3 pr-11 outline-none focus:border-evergreen
    transition-colors placeholder-ink/40`;
 
-// const FieldError = ({ message }: { message?: string }) =>
-//   message ? (
-//     <p className="flex items-center gap-1.5 text-red-600 text-sm mt-1.5">
-//       <AlertCircle size={14} /> {message}
-//     </p>
-//   ) : null;
-
 const ChangePasswordPage = () => {
   const [show, setShow] = useState(false);
 

@@ -144,14 +144,15 @@ const ProfilePage = () => {
     <label
       className="cursor-pointer inline-flex items-center justify-center gap-2
                       border border-evergreen text-evergreen hover:bg-evergreen/5
-                      text-sm font-bold px-4 py-2.5 rounded-xl transition-colors shrink-0"
+                      text-sm font-bold px-4 py-2.5 rounded-xl transition-colors shrink-0
+                    has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-evergreen has-[:focus-visible]:ring-offset-2"
     >
       <Icon size={16} /> {label}
       <input
         type="file"
         accept={allowedExt.join(",")}
         onChange={handleFile}
-        className="hidden"
+        className="sr-only"
       />
     </label>
   );
@@ -233,7 +234,7 @@ const ProfilePage = () => {
               {...fieldA11y('profile-mobile', errors.mobile_number?.message)}
               className={inputClass(!!errors.mobile_number)}
             />
-            <FieldError  id="profile-mobile" message={errors.mobile_number?.message} />
+            <FieldError id="profile-mobile" message={errors.mobile_number?.message} />
           </div>
 
           {isEmployer ? (
@@ -319,7 +320,7 @@ const ProfilePage = () => {
                 <p className="text-xs text-ink/40 mt-2">
                   {LOGO_EXT.join(", ")} files under 900kb.
                 </p>
-                <FieldError message={fileError} />
+                <FieldError alert message={fileError} />
               </div>
             </>
           ) : (
@@ -350,7 +351,7 @@ const ProfilePage = () => {
               <p className="text-xs text-ink/40 mt-2">
                 {RESUME_EXT.join(", ")} files under 900kb.
               </p>
-              <FieldError message={fileError} />
+              <FieldError alert message={fileError} />
 
               <label className="flex items-start gap-2 text-sm text-ink cursor-pointer mt-4">
                 <input
@@ -372,6 +373,7 @@ const ProfilePage = () => {
 
           {mutation.isSuccess && (
             <div
+              role="status"
               className="flex items-center gap-2 bg-evergreen/10 border border-evergreen/20 text-evergreen
                             rounded-xl px-4 py-3 text-sm"
             >

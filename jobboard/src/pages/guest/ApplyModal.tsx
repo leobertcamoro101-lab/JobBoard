@@ -56,158 +56,156 @@ const ApplyModal = ({ job, onClose }: Props) => {
      transition-colors placeholder-ink/40`;
 
   return (
-    <>
-      <Modal onClose={onClose} maxWidth="max-w-lg" labelledBy="apply-title">
-        <div className="p-5 sm:p-6 border-b border-hairline flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <h2 id="apply-title" className="text-ink font-bold text-lg break-words">
-              Apply for {job.title}
-            </h2>
-            <p className="text-ink/60 text-sm">{job.company}</p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="text-ink/40 hover:text-ink text-2xl shrink-0"
-          >
-            ×
-          </button>
+    <Modal onClose={onClose} maxWidth="max-w-lg" labelledBy="apply-title">
+      <div className="p-5 sm:p-6 border-b border-hairline flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h2 id="apply-title" className="text-ink font-bold text-lg break-words">
+            Apply for {job.title}
+          </h2>
+          <p className="text-ink/60 text-sm">{job.company}</p>
         </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="text-ink/40 hover:text-ink text-2xl shrink-0"
+        >
+          ×
+        </button>
+      </div>
 
-        {submitted ? (
-          <div className="p-8 text-center">
-            <p className="text-5xl mb-4">🎉</p>
-            <h3 className="text-ink font-bold text-xl mb-2">
-              Application Submitted!
-            </h3>
-            <p className="text-ink/60 mb-6">
-              Good luck! You'll hear back at{" "}
-              {isApplicant ? user?.email : job.apply_email}
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              {isApplicant && (
-                <Link
-                  to="/applicants/dashboard"
-                  onClick={onClose}
-                  className="w-full sm:w-auto border border-evergreen text-evergreen hover:bg-evergreen/5
-                               font-bold px-6 py-3 rounded-xl transition-colors"
-                >
-                  View my applications
-                </Link>
-              )}
-              <button
-                type="button"
+      {submitted ? (
+        <div className="p-8 text-center">
+          <p className="text-5xl mb-4">🎉</p>
+          <h3 className="text-ink font-bold text-xl mb-2">
+            Application Submitted!
+          </h3>
+          <p className="text-ink/60 mb-6">
+            Good luck! You'll hear back at{" "}
+            {isApplicant ? user?.email : job.apply_email}
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            {isApplicant && (
+              <Link
+                to="/applicants/dashboard"
                 onClick={onClose}
-                aria-label="Close"
-                className="w-full sm:w-auto bg-evergreen hover:bg-evergreen-dark text-white font-bold
-                             px-8 py-3 rounded-xl transition-colors"
+                className="w-full sm:w-auto border border-evergreen text-evergreen hover:bg-evergreen/5
+                             font-bold px-6 py-3 rounded-xl transition-colors"
               >
-                Close
-              </button>
-            </div>
-          </div>
-        ) : (
-          <form
-            onSubmit={handleSubmit((d) => mutation.mutate(d))}
-            className="p-5 sm:p-6 space-y-4"
-          >
-            <ApplicantIdentityField
-              user={user}
-              location={location}
-              register={register}
-              errors={errors}
-              inputClass={inputClass}
-            />
-
-            <div>
-              <label
-                htmlFor="apply-phone"
-                className="text-xs text-ink/60 mb-1 block"
-              >
-                Phone
-              </label>
-              <input
-                id="apply-phone"
-                {...register("phone")}
-                placeholder="+63 912 345 6789"
-                className={inputClass()}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="apply-linkedin"
-                className="text-xs text-ink/60 mb-1 block"
-              >
-                LinkedIn URL
-              </label>
-              <input
-                id="apply-linkedin"
-                {...register("linkedin")}
-                {...fieldA11y('apply-linkedin', errors.linkedin?.message)}
-                placeholder="https://linkedin.com/in/..."
-                className={inputClass(!!errors.linkedin)}
-              />
-              <FieldError compact id="apply-linkedin" message={errors.linkedin?.message} />
-            </div>
-
-            <div>
-              <label
-                htmlFor="apply-portfolio"
-                className="text-xs text-ink/60 mb-1 block"
-              >
-                Portfolio URL
-              </label>
-              <input
-                id="apply-portfolio"
-                {...register("portfolio")}
-                {...fieldA11y('apply-portfolio', errors.portfolio?.message)}
-                placeholder="https://yoursite.com"
-                className={inputClass(!!errors.portfolio)}
-              />
-              <FieldError compact id="apply-portfolio" message={errors.portfolio?.message} />
-            </div>
-
-            <div>
-              <label
-                htmlFor="apply-cover-letter"
-                className="text-xs text-ink/60 mb-1 block"
-              >
-                Cover Letter *{" "}
-                <span className="text-ink/40">(min 100 chars)</span>
-              </label>
-              <textarea
-                id="apply-cover-letter"
-                {...register("cover_letter")}
-                {...fieldA11y('apply-cover-letter', errors.cover_letter?.message)}
-                rows={6}
-                placeholder="Tell us why you're a great fit for this role..."
-                className={`${inputClass(!!errors.cover_letter)} resize-none`}
-              />
-              <FieldError compact id="apply-cover-letter" message={errors.cover_letter?.message} />
-            </div>
-
-            {mutation.error && (
-              <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
-                ⚠️{" "}
-                {(mutation.error as any)?.response?.data?.message ||
-                  "Failed to submit"}
-              </div>
+                View my applications
+              </Link>
             )}
-
             <button
-              type="submit"
-              disabled={mutation.isPending}
-              className="w-full bg-evergreen hover:bg-evergreen-dark disabled:opacity-50
-                           text-white font-bold py-3 rounded-xl transition-colors"
+              type="button"
+              onClick={onClose}
+              autoFocus
+              className="w-full sm:w-auto bg-evergreen hover:bg-evergreen-dark text-white font-bold
+                           px-8 py-3 rounded-xl transition-colors"
             >
-              {mutation.isPending ? "Submitting..." : "Submit Application →"}
+              Close
             </button>
-          </form>
-        )}
-      </Modal>
-    </>
+          </div>
+        </div>
+      ) : (
+        <form
+          onSubmit={handleSubmit((d) => mutation.mutate(d))}
+          className="p-5 sm:p-6 space-y-4"
+        >
+          <ApplicantIdentityField
+            user={user}
+            location={location}
+            register={register}
+            errors={errors}
+            inputClass={inputClass}
+          />
+
+          <div>
+            <label
+              htmlFor="apply-phone"
+              className="text-xs text-ink/60 mb-1 block"
+            >
+              Phone
+            </label>
+            <input
+              id="apply-phone"
+              {...register("phone")}
+              placeholder="+63 912 345 6789"
+              className={inputClass()}
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="apply-linkedin"
+              className="text-xs text-ink/60 mb-1 block"
+            >
+              LinkedIn URL
+            </label>
+            <input
+              id="apply-linkedin"
+              {...register("linkedin")}
+              {...fieldA11y('apply-linkedin', errors.linkedin?.message)}
+              placeholder="https://linkedin.com/in/..."
+              className={inputClass(!!errors.linkedin)}
+            />
+            <FieldError compact id="apply-linkedin" message={errors.linkedin?.message} />
+          </div>
+
+          <div>
+            <label
+              htmlFor="apply-portfolio"
+              className="text-xs text-ink/60 mb-1 block"
+            >
+              Portfolio URL
+            </label>
+            <input
+              id="apply-portfolio"
+              {...register("portfolio")}
+              {...fieldA11y('apply-portfolio', errors.portfolio?.message)}
+              placeholder="https://yoursite.com"
+              className={inputClass(!!errors.portfolio)}
+            />
+            <FieldError compact id="apply-portfolio" message={errors.portfolio?.message} />
+          </div>
+
+          <div>
+            <label
+              htmlFor="apply-cover-letter"
+              className="text-xs text-ink/60 mb-1 block"
+            >
+              Cover Letter *{" "}
+              <span className="text-ink/40">(min 100 chars)</span>
+            </label>
+            <textarea
+              id="apply-cover-letter"
+              {...register("cover_letter")}
+              {...fieldA11y('apply-cover-letter', errors.cover_letter?.message)}
+              rows={6}
+              placeholder="Tell us why you're a great fit for this role..."
+              className={`${inputClass(!!errors.cover_letter)} resize-none`}
+            />
+            <FieldError compact id="apply-cover-letter" message={errors.cover_letter?.message} />
+          </div>
+
+          {mutation.error && (
+            <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+              ⚠️{" "}
+              {(mutation.error as any)?.response?.data?.message ||
+                "Failed to submit"}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={mutation.isPending}
+            className="w-full bg-evergreen hover:bg-evergreen-dark disabled:opacity-50
+                         text-white font-bold py-3 rounded-xl transition-colors"
+          >
+            {mutation.isPending ? "Submitting..." : "Submit Application →"}
+          </button>
+        </form>
+      )}
+    </Modal>
   );
 };
 

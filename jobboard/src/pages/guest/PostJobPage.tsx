@@ -130,7 +130,7 @@ const PostJobPage = () => {
   if (isEdit && job && Number(job.employer_id) !== user?.id) {
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-        <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 text-sm">
+        <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 text-sm">
           ⚠️ You can only edit jobs that you posted.
         </div>
       </div>
@@ -210,7 +210,7 @@ const PostJobPage = () => {
                 placeholder="e.g. Cebu City or Remote"
                 className={inputClass(!!errors.location)}
               />
-               <FieldError compact id="job-company" message={errors.location?.message} />
+              <FieldError compact id="job-location" message={errors.location?.message} />
             </div>
           </div>
 
@@ -343,7 +343,7 @@ const PostJobPage = () => {
         </Card>
 
         <Card className="space-y-4">
-          <h2 className="text-ink font-bold mb-4">Contact</h2>
+          <h2 className="text-ink font-bold">Contact</h2>
           <div>
             <label
               htmlFor="job-apply-email"

@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { expectNoDuplicateIds } from './helpers';
 
 // Unique per run, so reruns never collide with earlier accounts
 const runId = Date.now().toString(36);
@@ -71,6 +72,20 @@ test.describe('hiring flow', () => {
     await expect(page.getByRole('heading', { name: employer.company })).toBeVisible();
 
     await page.goto('/post');
+
+    // submit empty first: every error must be tied to its own field
+    await page.getByRole('button', { name: /Post Job/ }).click();
+    for (const [label, message] of [
+      [/^Job Title/, /title/i],
+      [/^Location/, /location/i],
+      [/^Job Description/, /100 characters/i],
+    ] as const) {
+      const field = page.getByLabel(label);
+      await expect(field).toHaveAttribute('aria-invalid', 'true');
+      await expect(field).toHaveAccessibleDescription(message);
+    }
+    await expectNoDuplicateIds(page);
+
     await page.getByPlaceholder('e.g. Senior React Developer').fill(jobTitle);
     await page.getByPlaceholder('e.g. Cebu City or Remote').fill('Cebu City');
     await page.getByPlaceholder('Describe the role').fill('E2E description. '.repeat(10));

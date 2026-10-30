@@ -41,13 +41,6 @@ const inputClass = (hasError?: boolean) =>
    text-ink text-sm rounded-xl px-4 py-3 outline-none focus:border-evergreen
    transition-colors placeholder-ink/40`;
 
-// const FieldError = ({ message }: { message?: string }) =>
-//   message ? (
-//     <p className="flex items-center gap-1.5 text-red-600 text-sm mt-1.5">
-//       <AlertCircle size={14} /> {message}
-//     </p>
-//   ) : null;
-
 const ApplicantSignup = () => {
   const navigate = useNavigate();
   const registerApplicant = useAuthStore((s) => s.registerApplicant);
@@ -88,8 +81,6 @@ const ApplicantSignup = () => {
       setRequiresCode(needsCode);
       setStep(2);
     } catch (err: any) {
-      // setStep1Error(err?.response?.data?.message || 'Something went wrong');
-
       setStep1Error(getErrorMessage(err, "Something went wrong"));
     } finally {
       setStep1Pending(false);
@@ -127,10 +118,6 @@ const ApplicantSignup = () => {
       setCodeError("Confirmation Code is required");
       return;
     }
-    // if (!code.trim()) {
-    //   setCodeError('Confirmation Code is required');
-    //   return;
-    // }
 
     setCodeError("");
     setStep2Error("");
@@ -144,8 +131,6 @@ const ApplicantSignup = () => {
       });
       navigate("/");
     } catch (err: any) {
-      // setStep2Error(err?.response?.data?.message || 'Failed to confirm signup');
-
       setStep2Error(getErrorMessage(err, "Failed to confirm signup"));
     } finally {
       setStep2Pending(false);
@@ -334,14 +319,15 @@ const ApplicantSignup = () => {
               <label
                 className="cursor-pointer inline-flex items-center justify-center gap-2
                                 border border-evergreen text-evergreen hover:bg-evergreen/5
-                                text-sm font-bold px-4 py-2.5 rounded-xl transition-colors shrink-0"
+                                text-sm font-bold px-4 py-2.5 rounded-xl transition-colors shrink-0
+                    has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-evergreen has-[:focus-visible]:ring-offset-2"
               >
                 <FileText size={16} /> Select Resume
                 <input
                   type="file"
                   accept={ALLOWED_EXTENSIONS.join(",")}
                   onChange={handleFileSelect}
-                  className="hidden"
+                  className="sr-only"
                 />
               </label>
             </div>
@@ -382,6 +368,7 @@ const ApplicantSignup = () => {
               </label>
               <input
                 id="signup-code"
+                {...fieldA11y('signup-code', codeError)}
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 placeholder="Confirmation Code"

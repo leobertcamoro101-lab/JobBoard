@@ -45,13 +45,35 @@ test('signup errors are tied to their fields', async ({ page }) => {
   await expect(email).toHaveAccessibleDescription(/email/i);
 });
 
-test('modals are named and close with Escape', async ({ page }) => {
+test('modals are named, take focus, and close with Escape', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('a[href^="/jobs/"]').first().click();
+
+  const opener = page.getByRole('button', { name: /Apply Now/ });
+  await opener.click();
+
+  const dialog = page.getByRole('dialog', { name: /Apply for/ });
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toBeFocused();
+  await expectNoDuplicateIds(page);
+
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(opener).toBeFocused();
+});
+
+test('apply form errors are tied to their fields', async ({ page }) => {
   await page.goto('/');
   await page.locator('a[href^="/jobs/"]').first().click();
   await page.getByRole('button', { name: /Apply Now/ }).click();
 
   const dialog = page.getByRole('dialog', { name: /Apply for/ });
-  await expect(dialog).toBeVisible();
-  await page.keyboard.press('Escape');
-  await expect(dialog).toBeHidden();
+  await dialog.getByRole('button', { name: /Submit Application/ }).click();
+
+  for (const label of [/^Full Name/, /^Email/, /^Cover Letter/]) {
+    const field = dialog.getByLabel(label);
+    await expect(field).toHaveAttribute('aria-invalid', 'true');
+    await expect(field).toHaveAccessibleDescription(/\S/);
+  }
+  await expectNoDuplicateIds(page);
 });
