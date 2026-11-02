@@ -66,7 +66,7 @@ const ApplicantLogin = () => {
     <div className="max-w-md mx-auto px-4 sm:px-6 py-12">
       <h1 className="text-3xl font-bold text-ink mb-8">Applicants Login</h1>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <form noValidate onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
           <label
             htmlFor="login-email"

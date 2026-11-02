@@ -94,6 +94,20 @@ describe('EmployerSignup, step 1', () => {
     expect(screen.getByText('emma@example.test')).toBeInTheDocument();
   });
 
+  it('shows "Enter a valid email" for a malformed address instead of the browser tooltip', async () => {
+    renderPage();
+    await fillStep1();
+    const email = screen.getByLabelText(/^Email Address/);
+    await user.clear(email);
+    await user.type(email, 'not-an-email');
+    await user.click(screen.getByRole('button', { name: /Next/ }));
+
+    expect(email).toBeInvalid();
+    expect(email).toHaveAccessibleDescription('Enter a valid email');
+    expect(mocks.registerEmployer).not.toHaveBeenCalled();
+    expect(screen.getByText('1 of 2')).toBeInTheDocument();
+  });
+
   it('tells the user to wait when registration is rate-limited (429)', async () => {
     mocks.registerEmployer.mockRejectedValue({ response: { status: 429, data: { message: 'Too Many Attempts.' } } });
     renderPage();

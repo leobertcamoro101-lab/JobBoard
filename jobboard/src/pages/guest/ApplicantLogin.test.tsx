@@ -84,6 +84,18 @@ describe('ApplicantLogin', () => {
     expect(mocks.login).toHaveBeenCalledWith(expect.objectContaining({ remember: true }));
   });
 
+  it('shows "Enter a valid email" for a malformed address instead of the browser tooltip', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await user.type(screen.getByLabelText('Email'), 'not-an-email');
+    await user.type(screen.getByLabelText('Password'), 'secret-pass');
+    await user.click(screen.getByRole('button', { name: /Log In/ }));
+
+    expect(screen.getByLabelText('Email')).toBeInvalid();
+    expect(screen.getByLabelText('Email')).toHaveAccessibleDescription('Enter a valid email');
+    expect(mocks.login).not.toHaveBeenCalled();
+  });
+
   it('shows the server’s message and stays on the page when login fails', async () => {
     const user = userEvent.setup();
     mocks.login.mockRejectedValue({ response: { data: { message: 'These credentials do not match.' } } });

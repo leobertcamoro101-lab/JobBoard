@@ -108,6 +108,7 @@ const ApplyModal = ({ job, onClose }: Props) => {
         </div>
       ) : (
         <form
+          noValidate
           onSubmit={handleSubmit((d) => mutation.mutate(d))}
           className="p-5 sm:p-6 space-y-4"
         >

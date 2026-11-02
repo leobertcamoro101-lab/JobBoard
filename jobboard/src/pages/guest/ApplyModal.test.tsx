@@ -88,6 +88,18 @@ describe('ApplyModal', () => {
       expect(mocks.applyForJob).not.toHaveBeenCalled();
     });
 
+    it('shows the message for a malformed email instead of the browser tooltip', async () => {
+      renderModal();
+      await typeInto(/^Full Name/, 'Gina Guest');
+      await typeInto(/^Email/, 'not-an-email');
+      await typeInto(/^Cover Letter/, 'x'.repeat(100));
+      await submit();
+
+      expect(screen.getByLabelText(/^Email/)).toBeInvalid();
+      expect(screen.getByLabelText(/^Email/)).toHaveAccessibleDescription('Valid email required');
+      expect(mocks.applyForJob).not.toHaveBeenCalled();
+    });
+
     it('rejects a cover letter that is one character short', async () => {
       renderModal();
       await typeInto(/^Full Name/, 'Gina Guest');

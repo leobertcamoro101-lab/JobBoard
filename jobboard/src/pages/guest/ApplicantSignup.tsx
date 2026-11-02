@@ -158,7 +158,7 @@ const ApplicantSignup = () => {
             application.
           </p>
 
-          <form onSubmit={handleSubmit(onStep1Submit)} className="space-y-5">
+          <form noValidate onSubmit={handleSubmit(onStep1Submit)} className="space-y-5">
             <div>
               <label
                 htmlFor="signup-email"
