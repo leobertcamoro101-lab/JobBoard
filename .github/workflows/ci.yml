@@ -65,6 +65,8 @@ jobs:
 
       - run: npm ci
       - run: npm run build
+      - name: Unit tests
+        run: npm test
   e2e:
     runs-on: ubuntu-latest
     services:

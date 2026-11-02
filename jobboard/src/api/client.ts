@@ -25,25 +25,6 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
-
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // Only treat a 401 as "session expired" if we actually sent a token.
-    // (Bad-credential logins return 422 from Laravel, so they never reach this.)
-    if (error.response?.status === 401 && localStorage.getItem('token')) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('auth-storage');
-      notifyUnauthorized();
-    }
-    return Promise.reject(error);
-  },
-);
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-api.interceptors.request.use((config) => {
   if (!config.silent) notifyLoadingStart();
   return config;
 });
@@ -56,19 +37,18 @@ api.interceptors.response.use(
   (error) => {
     if (!error.config?.silent) notifyLoadingStop();
 
-    // Token missing/expired/revoked — clear stale auth state and send the user back to login
-    if (error.response?.status === 401) {
+    // Only treat a 401 as "session expired" if we actually sent a token.
+    // (Bad-credential logins return 422 from Laravel, so they never reach this.)
+    // The auth store handles the redirect, so no hard page reload here.
+    if (error.response?.status === 401 && localStorage.getItem('token')) {
       localStorage.removeItem('token');
       localStorage.removeItem('auth-storage');
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
+      notifyUnauthorized();
     }
-
     return Promise.reject(error);
   },
 );
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 interface AuthResponse {
   user: User;
   token: string;
@@ -97,7 +77,6 @@ export const confirmApplicantSignup = (
   const formData = new FormData();
   formData.append('email', data.email);
   if (data.code) formData.append('code', data.code);
-  // formData.append('code', data.code);
   if (data.file) formData.append('resume', data.file);
   formData.append('allow_view', String(data.allowView ?? true));
   return api.post('/applicant/register/confirm', formData, {
@@ -116,7 +95,6 @@ export const confirmEmployerSignup = (
   const formData = new FormData();
   formData.append('email', data.email);
   if (data.code) formData.append('code', data.code);
-  // formData.append('code', data.code);
   if (data.file) formData.append('logo', data.file);
   return api.post('/employer/register/confirm', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
