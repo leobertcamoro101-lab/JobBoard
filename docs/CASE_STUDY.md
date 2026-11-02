@@ -8,7 +8,7 @@ A job board with two roles. Employers post jobs, review applicants, and move eac
 
 ## Stack
 
-React, Vite and TypeScript on the frontend, with Tailwind CSS, TanStack Query, Zustand, React Hook Form and Zod. Laravel with Sanctum token auth and PostgreSQL on the backend. Vercel hosts the frontend, and Railway hosts the API, the database and a volume for uploads. GitHub Actions runs the tests.
+React, Vite and TypeScript on the frontend, with Tailwind CSS, TanStack Query, Zustand, React Hook Form and Zod. Laravel with Sanctum token auth and PostgreSQL on the backend. Vercel hosts the frontend, and Railway hosts the API, the database and a volume for uploads. Vitest and Playwright cover the frontend, and GitHub Actions runs the tests on every push.
 
 ## Decisions worth explaining
 
@@ -16,7 +16,7 @@ React, Vite and TypeScript on the frontend, with Tailwind CSS, TanStack Query, Z
 
 **One users table with a role.** Instead of separate applicant and employer tables and guards, there is one `users` table with a `role`, plus a profile table for each role. Login, tokens and password handling are written once, and the role decides what each person can reach.
 
-**A stateless two-step signup.** Signup is split in two: account details, then a file upload plus an optional emailed code. My first version kept the step-1 details in the PHP session. That failed as soon as I tested the endpoints with cURL, because each request arrived without the cookie, and it wouldn't be reliable between two domains anyway. I moved the pending data into a `pending_registrations` table (JSON payload plus an expiry), so each step is an independent request. An environment switch turns the emailed code off. I don't own a domain yet, and the email provider only delivers to the account owner until one is verified.
+**A stateless two-step signup.** Signup is split in two: account details, then a file upload plus an optional emailed code. My first version kept the step-1 details in the PHP session. That failed as soon as I tested the endpoints with cURL, because each request arrived without the cookie, and it wouldn't be reliable between two domains anyway. I moved the pending data into a `pending_registrations` table (JSON payload plus an expiry), so each step is an independent request. An environment switch turns the emailed code off, which the end-to-end tests use so they don't depend on a mailbox.
 
 **Frontend structure.** One shared Zod schema drives each form and its types. TanStack Query handles server state and refreshes it after changes, and Zustand holds the auth state. A small bridge module lets the Axios 401 handler reset auth state without a circular import. Route guards are role-aware, and login sends you back to the page you were trying to reach. Pages are lazy-loaded, with a loading boundary and an error screen for stale chunks after a deploy. Shared Card, Modal and Avatar components keep the screens consistent, and the avatar falls back to initials if an image fails to load.
 
@@ -28,22 +28,22 @@ React, Vite and TypeScript on the frontend, with Tailwind CSS, TanStack Query, Z
 
 **Uploads that vanished.** Resumes disappeared after redeploys because the container's filesystem is ephemeral, and the `public/storage` symlink doesn't exist on a fresh deploy because it's gitignored. I attached a Railway volume at `storage/app/public` and create the symlink on boot.
 
+**Email that worked locally and failed in production.** After I switched the emailed code on, signup in production showed "We couldn't send the confirmation email". The API logs on Railway (Deployments, Deploy Logs) and Resend's own dashboard pointed at the same cause: Resend only delivers to the account owner until a sending domain is verified, and mine was still "Not Started" because I had never added its DNS records. I verified a subdomain I already owned by adding Resend's DKIM and sending records in Cloudflare, set to DNS only so they aren't proxied. Then I pointed `MAIL_FROM_ADDRESS` at an address on that subdomain. Sending from a subdomain keeps the mail records away from my portfolio site's own DNS. The confirmation email now arrives and the code works.
+
 ## Quality and safety
 
-- **[Tests: 45 passed] feature tests** run against a real PostgreSQL database: ownership rules, applying, signup, profile and password changes. The base test class refuses to run unless the database name ends in `_test` and the host is local, so a misconfigured run can never wipe development or production data. 
-- Wrote a Playwright end-to-end test covering the full hiring flow, and ran it in GitHub Actions alongside [29] API feature tests on every push. 
-- Isolated end-to-end runs on a throwaway Postgres database and API, with a guard that aborts if they ever touch real data.
-- Form labels and error messages are programmatically linked to their fields, and Playwright tests check it.
-- Email confirmation via Resend on a verified sending domain (SPF/DKIM)
-
-- **CI** runs the API tests on a Postgres service container and type-checks and builds the frontend on every push.
+- **45 API feature tests** run against a real PostgreSQL database: ownership rules, applying, signup, profile and password changes. The base test class refuses to run unless the database name ends in `_test` and the host is local, so a misconfigured run can never wipe development or production data.
+- **131 frontend tests** (Vitest, React Testing Library) cover the forms, modals, auth store, API client and post-login redirects. They query by accessible name and check error descriptions instead of markup, and they cover the 429 "too many attempts" path. Writing the API client tests also showed that two stacked Axios interceptors both handled a 401, and the second forced a full page reload to `/login`, overriding the auth store.
+- **A Playwright end-to-end test** drives the whole hiring flow in a browser: the employer signs up and posts, the applicant signs up with a resume and applies, the employer accepts, and the applicant sees the decision. It runs in GitHub Actions against its own throwaway Postgres database and API, and a guard aborts the run if the API ever points at data it didn't create.
+- **Accessibility:** labels and error messages are programmatically linked to their fields (`aria-invalid`, `aria-describedby`). Dialogs are named, take focus when they open and return it to the opener on close. File pickers stay keyboard-reachable. Playwright tests check all of it, including duplicate ids.
+- **CI** runs the API tests on a Postgres service container, then type-checks and builds the frontend. The end-to-end job runs alongside them. The frontend unit tests run with `npm test`.
 - **Rate limiting** applies to login, signup, code confirmation and resend, keyed by email and IP. That needed two production settings: trusting Railway's proxy so Laravel sees real visitor IPs, and a persistent cache store, since counters on the `array` store reset on every request.
 - **Passwords and uploads:** strength rules are enforced on the client and the server. Changing a password requires the current one and signs out other devices. Uploads are validated by type and size, and replaced files are deleted.
 
 ## Known limitations
 
-Email verification is off in the demo, and there is no password reset by email yet, since both need a verified sending domain. Uploaded resumes sit on a public disk under unguessable file names. One Playwright test drives the whole hiring flow in a browser (employer signs up and posts, applicant signs up with a resume and applies, employer accepts, applicant sees the decision). It runs against its own throwaway API and database, and a guard test aborts the run if the API ever points at data it didn’t create.
+There is no password reset by email yet. The verified sending domain is in place, so it is the next feature. Uploaded resumes sit on a public disk under unguessable file names, which is not the same as private storage; signed, expiring links would be the proper fix.
 
 ## How I worked
 
-I built this with AI assistance (Claude), using it for scaffolding, code review and debugging, while making the design decisions and running and verifying everything myself. [Keep, reword or remove this section, but be ready to explain any file in the repo in an interview.]
+I built this with AI assistance (Claude), using it for scaffolding, code review and debugging, while making the design decisions and running and verifying everything myself.
