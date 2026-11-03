@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff, CheckCircle2 } from "lucide-react";
-import FieldError, { fieldA11y } from '../../components/FieldError';
+import FormField from '../../components/FormField';
 import { changePassword } from "../../api/client";
 import Card from "../../components/Card";
 
@@ -102,66 +102,44 @@ const ChangePasswordPage = () => {
           onSubmit={handleSubmit((d) => mutation.mutate(d))}
           className="space-y-5"
         >
-          <div>
-            <label
-              htmlFor="cp-current"
-              className="text-sm font-medium text-ink mb-1.5 block"
-            >
-              Current password
-            </label>
-            <div className="relative">
-              <input
-                id="cp-current"
-                {...register("current_password")}
-                {...fieldA11y('cp-current', errors.current_password?.message)}
-                type={type}
-                autoComplete="current-password"
-                className={inputClass(!!errors.current_password)}
-              />
-              {toggle}
-            </div>
-            <FieldError id="cp-current" message={errors.current_password?.message} />
-          </div>
+          <FormField label="Current password" id="cp-current" error={errors.current_password}>
+            {(a11y) => (
+              <div className="relative">
+                <input
+                  {...a11y}
+                  {...register("current_password")}
+                  type={type}
+                  autoComplete="current-password"
+                  className={inputClass(!!errors.current_password)}
+                />
+                {toggle}
+              </div>
+            )}
+          </FormField>
 
-          <div>
-            <label
-              htmlFor="cp-new"
-              className="text-sm font-medium text-ink mb-1.5 block"
-            >
-              New password
-            </label>
+          <FormField
+            label="New password"
+            error={errors.password}
+            hint="At least ten (10) characters, with uppercase and lowercase letters, a number and punctuation."
+          >
             <input
               id="cp-new"
               {...register("password")}
-              {...fieldA11y('cp-new', errors.password?.message)}
               type={type}
               autoComplete="new-password"
               className={inputClass(!!errors.password)}
             />
-            <p className="text-xs text-ink/40 mt-1.5">
-              At least ten (10) characters, with uppercase and lowercase
-              letters, a number and punctuation.
-            </p>
-            <FieldError id="cp-new" message={errors.password?.message} />
-          </div>
+          </FormField>
 
-          <div>
-            <label
-              htmlFor="cp-confirm"
-              className="text-sm font-medium text-ink mb-1.5 block"
-            >
-              Confirm new password
-            </label>
+          <FormField label="Confirm new password" error={errors.password_confirmation}>
             <input
               id="cp-confirm"
               {...register("password_confirmation")}
-              {...fieldA11y('cp-confirm', errors.password_confirmation?.message)}
               type={type}
               autoComplete="new-password"
               className={inputClass(!!errors.password_confirmation)}
             />
-            <FieldError id="cp-confirm" message={errors.password_confirmation?.message} />
-          </div>
+          </FormField>
 
           {mutation.isSuccess && (
             <div

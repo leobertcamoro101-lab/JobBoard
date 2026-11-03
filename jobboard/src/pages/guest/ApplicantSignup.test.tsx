@@ -76,6 +76,13 @@ describe('ApplicantSignup, step 1', () => {
     expect(mocks.registerApplicant).not.toHaveBeenCalled();
   });
 
+  it('reads the password rule with the field, before any error', () => {
+    renderPage();
+    expect(screen.getByLabelText(/^Password\b/)).toHaveAccessibleDescription(
+      expect.stringContaining('at least ten (10) characters'),
+    );
+  });
+
   it('explains which password rule is missing', async () => {
     renderPage();
     await user.type(screen.getByLabelText(/^Password\b/), 'alllowercase1!');

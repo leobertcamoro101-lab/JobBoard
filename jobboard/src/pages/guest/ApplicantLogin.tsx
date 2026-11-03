@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Eye, EyeOff } from "lucide-react";
-import FieldError, { fieldA11y } from "../../components/FieldError";
+import FormField from "../../components/FormField";
 import { useAuthStore } from "../../stores/authStore";
 import { getPostLoginTarget } from "../../utils/authRedirect";
 import { getErrorMessage } from "../../utils/apiError";
@@ -67,55 +67,37 @@ const ApplicantLogin = () => {
       <h1 className="text-3xl font-bold text-ink mb-8">Applicants Login</h1>
 
       <form noValidate onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        <div>
-          <label
-            htmlFor="login-email"
-            className="text-sm font-medium text-ink mb-1.5 block"
-          >
-            Email
-          </label>
+        <FormField label="Email" error={errors.email}>
           <input
             id="login-email"
             {...register("email")}
-            {...fieldA11y("login-email", errors.email?.message)}
             type="email"
             placeholder="email@example.com"
             className={inputClass(!!errors.email)}
           />
-          {errors.email && (
-            <FieldError id="login-email" message={errors.email?.message} />
-          )}
-        </div>
+        </FormField>
 
-        <div>
-          <label
-            htmlFor="login-password"
-            className="text-sm font-medium text-ink mb-1.5 block"
-          >
-            Password
-          </label>
-          <div className="relative">
-            <input
-              id="login-password"
-              {...register("password")}
-              {...fieldA11y("login-password", errors.password?.message)}
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              className={`${inputClass(!!errors.password)} pr-11`}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/40 hover:text-ink/70 transition-colors"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-          {errors.password && (
-            <FieldError id="login-password" message={errors.password?.message} />
+        <FormField label="Password" id="login-password" error={errors.password}>
+          {(a11y) => (
+            <div className="relative">
+              <input
+                {...a11y}
+                {...register("password")}
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                className={`${inputClass(!!errors.password)} pr-11`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/40 hover:text-ink/70 transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           )}
-        </div>
+        </FormField>
 
         <div className="flex items-center justify-between">
           <label className="flex items-center gap-2 text-sm text-ink cursor-pointer">

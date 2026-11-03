@@ -48,7 +48,7 @@ A full-stack job board. Employers post roles and review applicants; job seekers 
 - Rate-limited login, signup and code confirmation
 - Responsive layout with a mobile hamburger menu
 - Route-level code splitting (lazy-loaded pages)
-- Accessibility: labelled fields, errors announced and linked to their inputs, named dialogs with focus management, keyboard-reachable file pickers
+- Accessibility: every form field goes through one shared `FormField` component that wires the label, hint and error to the input; named dialogs with focus management; keyboard-reachable file pickers
 - Automated tests at three levels (see [Testing](#testing))
 
 ## Tech stack
@@ -165,9 +165,9 @@ By default signup asks for a 4-digit confirmation code. With `MAIL_MAILER=log` t
 
 | Level | Tool | Run |
 |---|---|---|
-| Frontend unit and component | Vitest, React Testing Library, user-event (136 tests) | `cd jobboard && npm test` |
-| API feature tests | Laravel / PHPUnit | `cd jobboard-api && php artisan test` |
-| End to end (full hiring flow, accessibility) | Playwright | `cd jobboard && npx playwright test` |
+| Frontend unit and component | Vitest, React Testing Library, user-event (197 tests) | `cd jobboard && npm test` |
+| API feature tests | Laravel / PHPUnit (45 tests) | `cd jobboard-api && php artisan test` |
+| End to end (full hiring flow, accessibility) | Playwright (14 tests) | `cd jobboard && npx playwright test` |
 
 All three run in GitHub Actions on every push. The frontend tests cover the forms, modals, auth store, API client (headers, 401 handling, multipart uploads) and the post-login redirect rules, with assertions on accessible names and error descriptions rather than markup. Vitest only picks up `src/**/*.test.{ts,tsx}`, so it never collides with the Playwright specs in `e2e/`.
 
@@ -178,7 +178,7 @@ The e2e job runs with `REQUIRE_EMAIL_CONFIRMATION=false` so the flow does not de
 ```
 jobboard/                     React frontend
   src/api/                    Axios client and typed request functions
-  src/components/             Reusable UI (Card, Modal, JobCard, ...)
+  src/components/             Reusable UI (Card, Modal, FormField, FieldError, JobCard, ...)
   src/navigation/             Navbar, dropdowns, route guard
   src/pages/guest/            Public pages (home, job detail, login, signup)
   src/pages/authenticated/    Dashboards and applicant list

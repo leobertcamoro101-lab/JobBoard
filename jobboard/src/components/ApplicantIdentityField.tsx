@@ -3,7 +3,7 @@ import type { Location } from "react-router-dom";
 import type { FieldErrors, UseFormRegister } from "react-hook-form";
 import type { User } from "../types";
 import type { ApplyForm } from "../schemas/applySchema";
-import FieldError, { fieldA11y } from "./FieldError";
+import FormField from "./FormField";
 
 interface Props {
   user: User | null;
@@ -47,18 +47,14 @@ const ApplicantIdentityField = ({ user, location, register, errors, inputClass }
         </p>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="apply-name" className="text-xs text-ink/60 mb-1 block">Full Name *</label>
-          <input id="apply-name" {...register("name")} {...fieldA11y("apply-name", errors.name?.message)}
+        <FormField label="Full Name *" size="compact" error={errors.name}>
+          <input id="apply-name" {...register("name")}
             placeholder="John Doe" className={inputClass(!!errors.name)} />
-          <FieldError compact id="apply-name" message={errors.name?.message} />
-        </div>
-        <div>
-          <label htmlFor="apply-email" className="text-xs text-ink/60 mb-1 block">Email *</label>
-          <input id="apply-email" {...register("email")} {...fieldA11y("apply-email", errors.email?.message)}
+        </FormField>
+        <FormField label="Email *" size="compact" error={errors.email}>
+          <input id="apply-email" {...register("email")}
             type="email" placeholder="john@example.com" className={inputClass(!!errors.email)} />
-          <FieldError compact id="apply-email" message={errors.email?.message} />
-        </div>
+        </FormField>
       </div>
     </>
   );

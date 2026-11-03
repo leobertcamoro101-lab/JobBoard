@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import FieldError, { fieldA11y } from "../../components/FieldError";
+import FormField from "../../components/FormField";
 import { createJob, getJob, updateJob } from "../../api/client";
 import { useAuthStore } from "../../stores/authStore";
 import Card from "../../components/Card";
@@ -156,72 +156,43 @@ const PostJobPage = () => {
       </div>
 
       <form
+        noValidate
         onSubmit={handleSubmit((d) => mutation.mutate(d))}
         className="space-y-5"
       >
         <Card className="space-y-4">
           <h2 className="text-ink font-bold">Job Details</h2>
 
-          <div>
-            <label
-              htmlFor="job-title"
-              className="text-xs text-ink/60 mb-1 block"
-            >
-              Job Title *
-            </label>
+          <FormField label="Job Title *" size="compact" error={errors.title}>
             <input
               id="job-title"
               {...register("title")}
-              {...fieldA11y('job-title', errors.title?.message)}
               placeholder="e.g. Senior React Developer"
               className={inputClass(!!errors.title)}
             />
-            <FieldError compact id="job-title" message={errors.title?.message} />
-          </div>
+          </FormField>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="job-company"
-                className="text-xs text-ink/60 mb-1 block"
-              >
-                Company *
-              </label>
+            <FormField label="Company *" size="compact" error={errors.company}>
               <input
                 id="job-company"
                 {...register("company")}
-                {...fieldA11y('job-company', errors.company?.message)}
                 placeholder="Your company name"
                 className={inputClass(!!errors.company)}
               />
-              <FieldError compact id="job-company" message={errors.company?.message} />
-            </div>
-            <div>
-              <label
-                htmlFor="job-location"
-                className="text-xs text-ink/60 mb-1 block"
-              >
-                Location *
-              </label>
+            </FormField>
+            <FormField label="Location *" size="compact" error={errors.location}>
               <input
                 id="job-location"
                 {...register("location")}
-                {...fieldA11y('job-location', errors.location?.message)}
                 placeholder="e.g. Cebu City or Remote"
                 className={inputClass(!!errors.location)}
               />
-              <FieldError compact id="job-location" message={errors.location?.message} />
-            </div>
+            </FormField>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="job-type"
-                className="text-xs text-ink/60 mb-1 block"
-              >
-                Job Type *
-              </label>
+            <FormField label="Job Type *" size="compact">
               <select
                 id="job-type"
                 {...register("type")}
@@ -232,14 +203,8 @@ const PostJobPage = () => {
                 <option value="remote">Remote</option>
                 <option value="contract">Contract</option>
               </select>
-            </div>
-            <div>
-              <label
-                htmlFor="job-category"
-                className="text-xs text-ink/60 mb-1 block"
-              >
-                Category *
-              </label>
+            </FormField>
+            <FormField label="Category *" size="compact">
               <select
                 id="job-category"
                 {...register("category")}
@@ -251,20 +216,14 @@ const PostJobPage = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </FormField>
           </div>
         </Card>
 
         <Card className="space-y-4">
           <h2 className="text-ink font-bold">Salary (Optional)</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label
-                htmlFor="job-currency"
-                className="text-xs text-ink/60 mb-1 block"
-              >
-                Currency
-              </label>
+            <FormField label="Currency" size="compact">
               <select
                 id="job-currency"
                 {...register("currency")}
@@ -274,64 +233,38 @@ const PostJobPage = () => {
                 <option value="USD">USD</option>
                 <option value="SGD">SGD</option>
               </select>
-            </div>
-            <div>
-              <label
-                htmlFor="job-salary-min"
-                className="text-xs text-ink/60 mb-1 block"
-              >
-                Min Salary
-              </label>
+            </FormField>
+            <FormField label="Min Salary" size="compact">
               <input
                 id="job-salary-min"
                 {...register("salary_min")}
                 placeholder="e.g. 50000"
                 className={inputClass()}
               />
-            </div>
-            <div>
-              <label
-                htmlFor="job-salary-max"
-                className="text-xs text-ink/60 mb-1 block"
-              >
-                Max Salary
-              </label>
+            </FormField>
+            <FormField label="Max Salary" size="compact">
               <input
                 id="job-salary-max"
                 {...register("salary_max")}
                 placeholder="e.g. 80000"
                 className={inputClass()}
               />
-            </div>
+            </FormField>
           </div>
         </Card>
 
         <Card className="space-y-4">
           <h2 className="text-ink font-bold">Description</h2>
-          <div>
-            <label
-              htmlFor="job-description"
-              className="text-xs text-ink/60 mb-1 block"
-            >
-              Job Description *
-            </label>
+          <FormField label="Job Description *" size="compact" error={errors.description}>
             <textarea
               id="job-description"
               {...register("description")}
-              {...fieldA11y('job-description', errors.description?.message)}
               rows={6}
               placeholder="Describe the role, responsibilities, and what makes it exciting..."
               className={`${inputClass(!!errors.description)} resize-none`}
             />
-            <FieldError compact id="job-description" message={errors.description?.message} />
-          </div>
-          <div>
-            <label
-              htmlFor="job-requirements"
-              className="text-xs text-ink/60 mb-1 block"
-            >
-              Requirements <span className="text-ink/40">(one per line)</span>
-            </label>
+          </FormField>
+          <FormField label={<>Requirements <span className="text-ink/40">(one per line)</span></>} size="compact">
             <textarea
               id="job-requirements"
               {...register("requirements")}
@@ -339,28 +272,20 @@ const PostJobPage = () => {
               placeholder="5+ years React experience&#10;TypeScript proficiency&#10;..."
               className={`${inputClass()} resize-none`}
             />
-          </div>
+          </FormField>
         </Card>
 
         <Card className="space-y-4">
           <h2 className="text-ink font-bold">Contact</h2>
-          <div>
-            <label
-              htmlFor="job-apply-email"
-              className="text-xs text-ink/60 mb-1 block"
-            >
-              Application Email *
-            </label>
+          <FormField label="Application Email *" size="compact" error={errors.apply_email}>
             <input
               id="job-apply-email"
               {...register("apply_email")}
-              {...fieldA11y('job-apply-email', errors.apply_email?.message)}
               type="email"
               placeholder="jobs@yourcompany.com"
               className={inputClass(!!errors.apply_email)}
             />
-            <FieldError compact id="job-apply-email" message={errors.apply_email?.message} />
-          </div>
+          </FormField>
         </Card>
 
         {mutation.error && (

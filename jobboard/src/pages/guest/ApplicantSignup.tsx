@@ -4,7 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { FileText } from "lucide-react";
-import FieldError, { fieldA11y } from '../../components/FieldError';
+import FieldError from '../../components/FieldError';
+import FormField from '../../components/FormField';
 import { useAuthStore } from "../../stores/authStore";
 import { getErrorMessage } from "../../utils/apiError";
 
@@ -159,115 +160,66 @@ const ApplicantSignup = () => {
           </p>
 
           <form noValidate onSubmit={handleSubmit(onStep1Submit)} className="space-y-5">
-            <div>
-              <label
-                htmlFor="signup-email"
-                className="text-sm font-medium text-ink mb-1.5 block"
-              >
-                Email Address *
-              </label>
+            <FormField label="Email Address *" error={errors.email}>
               <input
                 id="signup-email"
                 {...register("email")}
-                {...fieldA11y('signup-email', errors.email?.message)}
                 type="email"
                 placeholder="Email Address"
                 className={inputClass(!!errors.email)}
               />
-              <FieldError id="signup-email" message={errors.email?.message} />
-            </div>
+            </FormField>
 
-            <div>
-              <label
-                htmlFor="signup-password"
-                className="text-sm font-medium text-ink mb-1.5 block"
-              >
-                Password *
-              </label>
+            <FormField
+              label="Password *"
+              error={errors.password}
+              hint="Password must be at least ten (10) characters and should be a mix of uppercase and lowercase characters, numbers, and punctuations"
+            >
               <input
                 id="signup-password"
                 {...register("password")}
-                {...fieldA11y('signup-password', errors.password?.message)}
                 type="password"
                 placeholder="Password"
                 className={inputClass(!!errors.password)}
               />
-              <p className="text-xs text-ink/40 mt-1.5">
-                Password must be at least ten (10) characters and should be a
-                mix of uppercase and lowercase characters, numbers, and
-                punctuations
-              </p>
-              <FieldError id="signup-password" message={errors.password?.message} />
-            </div>
+            </FormField>
 
-            <div>
-              <label
-                htmlFor="signup-confirm-password"
-                className="text-sm font-medium text-ink mb-1.5 block"
-              >
-                Confirm Password *
-              </label>
+            <FormField label="Confirm Password *" error={errors.confirmPassword}>
               <input
                 id="signup-confirm-password"
                 {...register("confirmPassword")}
-                {...fieldA11y('signup-confirm-password', errors.confirmPassword?.message)}
                 type="password"
                 placeholder="Confirm Password"
                 className={inputClass(!!errors.confirmPassword)}
               />
-              <FieldError id="signup-confirm-password" message={errors.confirmPassword?.message} />
-            </div>
+            </FormField>
 
-            <div>
-              <label
-                htmlFor="signup-first-name"
-                className="text-sm font-medium text-ink mb-1.5 block"
-              >
-                First Name *
-              </label>
+            <FormField label="First Name *" error={errors.firstName}>
               <input
                 id="signup-first-name"
                 {...register("firstName")}
-                {...fieldA11y('signup-first-name', errors.firstName?.message)}
                 placeholder="First Name"
                 className={inputClass(!!errors.firstName)}
               />
-              <FieldError id="signup-first-name" message={errors.firstName?.message} />
-            </div>
+            </FormField>
 
-            <div>
-              <label
-                htmlFor="signup-last-name"
-                className="text-sm font-medium text-ink mb-1.5 block"
-              >
-                Last Name *
-              </label>
+            <FormField label="Last Name *" error={errors.lastName}>
               <input
                 id="signup-last-name"
                 {...register("lastName")}
-                {...fieldA11y('signup-last-name', errors.lastName?.message)}
                 placeholder="Last Name"
                 className={inputClass(!!errors.lastName)}
               />
-              <FieldError id="signup-last-name" message={errors.lastName?.message} />
-            </div>
+            </FormField>
 
-            <div>
-              <label
-                htmlFor="signup-mobile"
-                className="text-sm font-medium text-ink mb-1.5 block"
-              >
-                Mobile Number *
-              </label>
+            <FormField label="Mobile Number *" error={errors.mobileNumber}>
               <input
                 id="signup-mobile"
                 {...register("mobileNumber")}
-                {...fieldA11y('signup-mobile', errors.mobileNumber?.message)}
                 placeholder="Mobile Number"
                 className={inputClass(!!errors.mobileNumber)}
               />
-              <FieldError id="signup-mobile" message={errors.mobileNumber?.message} />
-            </div>
+            </FormField>
 
             {step1Error && (
               <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
@@ -360,21 +312,15 @@ const ApplicantSignup = () => {
                 Please enter the code sent to{" "}
                 <span className="font-semibold">{email}</span>
               </p>
-              <label
-                htmlFor="signup-code"
-                className="text-sm font-medium text-ink mb-1.5 block"
-              >
-                Confirmation Code *
-              </label>
+              <FormField label="Confirmation Code *" error={codeError}>
               <input
                 id="signup-code"
-                {...fieldA11y('signup-code', codeError)}
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 placeholder="Confirmation Code"
                 className={inputClass(!!codeError)}
               />
-              <FieldError id="signup-code" message={codeError} />
+              </FormField>
             </div>
           )}
 

@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import FieldError, { fieldA11y } from "../../components/FieldError";
+import FormField from "../../components/FormField";
 import { applyForJob } from "../../api/client";
 import { useAuthStore } from "../../stores/authStore";
 import type { Job } from "../../types";
@@ -120,73 +120,42 @@ const ApplyModal = ({ job, onClose }: Props) => {
             inputClass={inputClass}
           />
 
-          <div>
-            <label
-              htmlFor="apply-phone"
-              className="text-xs text-ink/60 mb-1 block"
-            >
-              Phone
-            </label>
+          <FormField label="Phone" size="compact">
             <input
               id="apply-phone"
               {...register("phone")}
               placeholder="+63 912 345 6789"
               className={inputClass()}
             />
-          </div>
+          </FormField>
 
-          <div>
-            <label
-              htmlFor="apply-linkedin"
-              className="text-xs text-ink/60 mb-1 block"
-            >
-              LinkedIn URL
-            </label>
+          <FormField label="LinkedIn URL" size="compact" error={errors.linkedin}>
             <input
               id="apply-linkedin"
               {...register("linkedin")}
-              {...fieldA11y('apply-linkedin', errors.linkedin?.message)}
               placeholder="https://linkedin.com/in/..."
               className={inputClass(!!errors.linkedin)}
             />
-            <FieldError compact id="apply-linkedin" message={errors.linkedin?.message} />
-          </div>
+          </FormField>
 
-          <div>
-            <label
-              htmlFor="apply-portfolio"
-              className="text-xs text-ink/60 mb-1 block"
-            >
-              Portfolio URL
-            </label>
+          <FormField label="Portfolio URL" size="compact" error={errors.portfolio}>
             <input
               id="apply-portfolio"
               {...register("portfolio")}
-              {...fieldA11y('apply-portfolio', errors.portfolio?.message)}
               placeholder="https://yoursite.com"
               className={inputClass(!!errors.portfolio)}
             />
-            <FieldError compact id="apply-portfolio" message={errors.portfolio?.message} />
-          </div>
+          </FormField>
 
-          <div>
-            <label
-              htmlFor="apply-cover-letter"
-              className="text-xs text-ink/60 mb-1 block"
-            >
-              Cover Letter *{" "}
-              <span className="text-ink/40">(min 100 chars)</span>
-            </label>
+          <FormField label={<>Cover Letter * <span className="text-ink/40">(min 100 chars)</span></>} size="compact" error={errors.cover_letter}>
             <textarea
               id="apply-cover-letter"
               {...register("cover_letter")}
-              {...fieldA11y('apply-cover-letter', errors.cover_letter?.message)}
               rows={6}
               placeholder="Tell us why you're a great fit for this role..."
               className={`${inputClass(!!errors.cover_letter)} resize-none`}
             />
-            <FieldError compact id="apply-cover-letter" message={errors.cover_letter?.message} />
-          </div>
+          </FormField>
 
           {mutation.error && (
             <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">

@@ -8,7 +8,8 @@ import {
   FileText,
   Image as ImageIcon,
 } from "lucide-react";
-import FieldError, { fieldA11y } from '../../components/FieldError';
+import FieldError from '../../components/FieldError';
+import FormField from '../../components/FormField';
 import { updateProfile } from "../../api/client";
 import { useAuthStore } from "../../stores/authStore";
 import Card from "../../components/Card";
@@ -170,108 +171,61 @@ const ProfilePage = () => {
 
       <Card>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <div>
-            <label
-              htmlFor="profile-email"
-              className="text-sm font-medium text-ink mb-1.5 block"
-            >
-              Email
-            </label>
+          <FormField
+            label="Email"
+            hint="Your email is your login and can't be changed here."
+          >
             <input
               id="profile-email"
               value={user.email}
               disabled
               className="w-full bg-hairline/40 border border-hairline text-ink/60 text-sm rounded-xl px-4 py-3"
             />
-            <p className="text-xs text-ink/40 mt-1.5">
-              Your email is your login and can't be changed here.
-            </p>
-          </div>
+          </FormField>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="profile-first-name"
-                className="text-sm font-medium text-ink mb-1.5 block"
-              >
-                First Name
-              </label>
+            <FormField label="First Name" error={errors.first_name}>
               <input
                 id="profile-first-name"
                 {...register("first_name")}
-                {...fieldA11y('profile-first-name', errors.first_name?.message)}
                 className={inputClass(!!errors.first_name)}
               />
-              <FieldError id="profile-first-name" message={errors.first_name?.message} />
-            </div>
-            <div>
-              <label
-                htmlFor="profile-last-name"
-                className="text-sm font-medium text-ink mb-1.5 block"
-              >
-                Last Name
-              </label>
+            </FormField>
+            <FormField label="Last Name" error={errors.last_name}>
               <input
                 id="profile-last-name"
                 {...register("last_name")}
-                {...fieldA11y('profile-last-name', errors.last_name?.message)}
                 className={inputClass(!!errors.last_name)}
               />
-              <FieldError id="profile-last-name" message={errors.last_name?.message} />
-            </div>
+            </FormField>
           </div>
 
-          <div>
-            <label
-              htmlFor="profile-mobile"
-              className="text-sm font-medium text-ink mb-1.5 block"
-            >
-              Mobile Number
-            </label>
+          <FormField label="Mobile Number" error={errors.mobile_number}>
             <input
               id="profile-mobile"
               {...register("mobile_number")}
-              {...fieldA11y('profile-mobile', errors.mobile_number?.message)}
               className={inputClass(!!errors.mobile_number)}
             />
-            <FieldError id="profile-mobile" message={errors.mobile_number?.message} />
-          </div>
+          </FormField>
 
           {isEmployer ? (
             <>
-              <div>
-                <label
-                  htmlFor="profile-company-name"
-                  className="text-sm font-medium text-ink mb-1.5 block"
-                >
-                  Company Name
-                </label>
+              <FormField label="Company Name" error={errors.company_name}>
                 <input
                   id="profile-company-name"
                   {...register("company_name")}
-                  {...fieldA11y('profile-company-name', errors.company_name?.message)}
                   className={inputClass(!!errors.company_name)}
                 />
-                <FieldError id="profile-company-name" message={errors.company_name?.message} />
-              </div>
+              </FormField>
 
-              <div>
-                <label
-                  htmlFor="profile-company-website"
-                  className="text-sm font-medium text-ink mb-1.5 block"
-                >
-                  Company Website{" "}
-                  <span className="text-ink/40 font-normal">(optional)</span>
-                </label>
+              <FormField label={<>Company Website <span className="text-ink/40 font-normal">(optional)</span></>} error={errors.company_website}>
                 <input
                   id="profile-company-website"
                   {...register("company_website")}
-                  {...fieldA11y('profile-company-website', errors.company_website?.message)}
                   placeholder="https://yourcompany.com"
                   className={inputClass(!!errors.company_website)}
                 />
-                <FieldError id="profile-company-website" message={errors.company_website?.message} />
-              </div>
+              </FormField>
 
               <div>
                 <p className="text-sm font-medium text-ink mb-2 block">
