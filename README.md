@@ -165,7 +165,7 @@ By default signup asks for a 4-digit confirmation code. With `MAIL_MAILER=log` t
 
 | Level | Tool | Run |
 |---|---|---|
-| Frontend unit and component | Vitest, React Testing Library, user-event (131 tests) | `cd jobboard && npm test` |
+| Frontend unit and component | Vitest, React Testing Library, user-event (136 tests) | `cd jobboard && npm test` |
 | API feature tests | Laravel / PHPUnit | `cd jobboard-api && php artisan test` |
 | End to end (full hiring flow, accessibility) | Playwright | `cd jobboard && npx playwright test` |
 
