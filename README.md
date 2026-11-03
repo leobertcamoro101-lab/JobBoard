@@ -195,10 +195,20 @@ jobboard-api/                 Laravel API
 
 ## Deployment notes
 
-- **Frontend (Vercel):** set `VITE_API_URL` to the Railway API URL ending in `/api`.
+- **Frontend (Vercel):** set `VITE_API_URL` to the Railway API URL ending in `/api`. Git auto-deploys are switched off in `vercel.json`; deploys come from a deploy hook that CI calls (see Gated deploys).
 - **API (Railway):** set the variables above on the API service and use the private `postgres.railway.internal` host for `DB_HOST`.
 - **Uploads:** attach a volume to the API service at `/app/storage/app/public`, otherwise resumes and logos disappear on every redeploy. The `public/storage` symlink is created automatically on boot.
 - **Mail:** Resend only delivers to your own address until you verify a sending domain. Add the DKIM and SPF records Resend gives you, wait for the domain to show Verified, then use an address on it for `MAIL_FROM_ADDRESS`. Until then, signup fails with "couldn't send the confirmation email" unless `REQUIRE_EMAIL_CONFIRMATION=false`.
+
+## Gated deploys
+
+Nothing reaches production unless CI passes.
+
+1. A push to `main` runs `api-tests`, `frontend-build` (build and unit tests) and `e2e`.
+2. A final `deploy` job runs only if all three succeed, and calls a Vercel deploy hook stored as the GitHub secret `VERCEL_DEPLOY_HOOK_URL`.
+3. Railway has **Wait for CI** switched on, so the API deploys only after the same workflow succeeds.
+
+Pull requests run the tests but never deploy. I checked the failure path by pushing a deliberately broken commit: the build job failed, the deploy job was skipped, Vercel created no deployment, and Railway marked the deploy as skipped.
 
 ## Known limitations
 

@@ -40,6 +40,10 @@ React, Vite and TypeScript on the frontend, with Tailwind CSS, TanStack Query, Z
 - **Rate limiting** applies to login, signup, code confirmation and resend, keyed by email and IP. That needed two production settings: trusting Railway's proxy so Laravel sees real visitor IPs, and a persistent cache store, since counters on the `array` store reset on every request.
 - **Passwords and uploads:** strength rules are enforced on the client and the server. Changing a password requires the current one and signs out other devices. Uploads are validated by type and size, and replaced files are deleted.
 
+## Delivery pipeline
+
+Deploys are gated on CI. A push to `main` runs the API tests, the frontend build and unit tests, and the end-to-end test. A final job calls a Vercel deploy hook only if all three pass, and Vercel's own Git auto-deploy is switched off so the hook is the only way in. Railway's **Wait for CI** setting holds the API deploy until the same workflow succeeds. I tested the failure path on purpose by pushing a commit with a broken import. The build job failed, the deploy job was skipped, Vercel created no deployment, and Railway marked the deploy as skipped because the CI check suite failed. The live site stayed on the last good version. One trade-off: the two hosts deploy a moment apart, so a change that needs both a new endpoint and new frontend code should keep the old API behaviour for one deploy cycle.
+
 ## Known limitations
 
 There is no password reset by email yet. The verified sending domain is in place, so it is the next feature. Uploaded resumes sit on a public disk under unguessable file names, which is not the same as private storage; signed, expiring links would be the proper fix.
