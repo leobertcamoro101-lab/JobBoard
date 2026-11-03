@@ -37,3 +37,6 @@ AppRoutes.tsx
 
 # to check error in Typescript
 npx tsc --noEmit 
+
+# Then only the hook deploys. The side effect is that pull requests no longer get preview deployments. If you want previews, use
+"git": { "deploymentEnabled": { "main": false } }
