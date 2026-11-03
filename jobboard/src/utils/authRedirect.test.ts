@@ -1,7 +1,7 @@
 import type { Location } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import type { User } from '../types';
-import { getPostLoginTarget } from './authRedirect';
+// import { getPostLoginTarget } from './authRedirect';
 
 const user = (role: User['role']): User => ({
   id: 1,
