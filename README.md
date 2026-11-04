@@ -48,7 +48,7 @@ A full-stack job board. Employers post roles and review applicants; job seekers 
 - Rate-limited login, signup and code confirmation
 - Responsive layout with a mobile hamburger menu
 - Route-level code splitting (lazy-loaded pages)
-- Accessibility: every form field goes through one shared `FormField` component that wires the label, hint and error to the input; named dialogs with focus management; keyboard-reachable file pickers
+- Accessibility: every form field goes through one shared `FormField` component that wires the label, hint and error to the input; named dialogs with focus management; one shared `FilePicker` for resume and logo uploads (type and size checks, keyboard-reachable)
 - Automated tests at three levels (see [Testing](#testing))
 
 ## Tech stack
@@ -165,7 +165,7 @@ By default signup asks for a 4-digit confirmation code. With `MAIL_MAILER=log` t
 
 | Level | Tool | Run |
 |---|---|---|
-| Frontend unit and component | Vitest, React Testing Library, user-event (197 tests) | `cd jobboard && npm test` |
+| Frontend unit and component | Vitest, React Testing Library, user-event (207 tests) | `cd jobboard && npm test` |
 | API feature tests | Laravel / PHPUnit (45 tests) | `cd jobboard-api && php artisan test` |
 | End to end (full hiring flow, accessibility) | Playwright (14 tests) | `cd jobboard && npx playwright test` |
 
@@ -178,7 +178,7 @@ The e2e job runs with `REQUIRE_EMAIL_CONFIRMATION=false` so the flow does not de
 ```
 jobboard/                     React frontend
   src/api/                    Axios client and typed request functions
-  src/components/             Reusable UI (Card, Modal, FormField, FieldError, JobCard, ...)
+  src/components/             Reusable UI (Card, Modal, FormField, FilePicker, FieldError, JobCard, ...)
   src/navigation/             Navbar, dropdowns, route guard
   src/pages/guest/            Public pages (home, job detail, login, signup)
   src/pages/authenticated/    Dashboards and applicant list

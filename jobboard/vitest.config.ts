@@ -4,6 +4,7 @@ import { defineConfig } from 'vitest/config';
 // and Vitest uses this file instead of vite.config.ts when both exist.
 export default defineConfig({
   test: {
+    // pool: 'vmThreads', // cause error
     // Unit tests only. The Playwright specs in e2e/ are run by `playwright test`.
     include: ['src/**/*.test.{ts,tsx}'],
     environment: 'jsdom',

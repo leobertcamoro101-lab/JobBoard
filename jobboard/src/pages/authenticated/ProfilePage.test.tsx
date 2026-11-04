@@ -243,6 +243,23 @@ describe('ProfilePage, employer', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Only .jpg, .jpeg, .png, .webp files are allowed');
   });
 
+  it('stops asking for the logo to be removed once a new file is chosen', async () => {
+    renderPage({
+      ...employer,
+      employer_profile: { company_name: 'Acme Corp', company_website: null, company_logo_url: 'https://files.test/logo.png' },
+    } as User);
+    await user.click(screen.getByRole('checkbox', { name: 'Remove my logo' }));
+    expect(screen.getByText('Logo will be removed')).toBeInTheDocument();
+
+    await user.upload(screen.getByLabelText('Replace logo'), new File(['x'], 'new.png', { type: 'image/png' }));
+    expect(screen.getByText('new.png')).toBeInTheDocument();
+
+    // Choosing something invalid afterwards clears the file; the old removal request must not come back
+    await user.upload(screen.getByLabelText('Replace logo'), pdf());
+    expect(await screen.findByText('Current logo')).toBeInTheDocument();
+    expect(screen.queryByText('Logo will be removed')).not.toBeInTheDocument();
+  });
+
   it('can ask for the current logo to be removed', async () => {
     renderPage({
       ...employer,

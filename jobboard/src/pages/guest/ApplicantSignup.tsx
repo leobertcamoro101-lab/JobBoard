@@ -6,6 +6,7 @@ import { z } from "zod";
 import { FileText } from "lucide-react";
 import FieldError from '../../components/FieldError';
 import FormField from '../../components/FormField';
+import FilePicker from '../../components/FilePicker';
 import { useAuthStore } from "../../stores/authStore";
 import { getErrorMessage } from "../../utils/apiError";
 
@@ -86,26 +87,6 @@ const ApplicantSignup = () => {
     } finally {
       setStep1Pending(false);
     }
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const ext = "." + file.name.split(".").pop()?.toLowerCase();
-    if (!ALLOWED_EXTENSIONS.includes(ext)) {
-      setFileError(
-        `Only files with ${ALLOWED_EXTENSIONS.join(", ")} extensions less than 900kb are allowed`,
-      );
-      setResumeFile(null);
-      return;
-    }
-    if (file.size > MAX_RESUME_BYTES) {
-      setFileError("File must be less than 900kb");
-      setResumeFile(null);
-      return;
-    }
-    setFileError("");
-    setResumeFile(file);
   };
 
   const handleStep2Submit = async (e: React.FormEvent) => {
@@ -268,20 +249,17 @@ const ApplicantSignup = () => {
               <span className="text-sm text-ink/50 flex-1">
                 {resumeFile ? resumeFile.name : "No Resume Selected..."}
               </span>
-              <label
-                className="cursor-pointer inline-flex items-center justify-center gap-2
-                                border border-evergreen text-evergreen hover:bg-evergreen/5
-                                text-sm font-bold px-4 py-2.5 rounded-xl transition-colors shrink-0
-                    has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-evergreen has-[:focus-visible]:ring-offset-2"
-              >
-                <FileText size={16} /> Select Resume
-                <input
-                  type="file"
-                  accept={ALLOWED_EXTENSIONS.join(",")}
-                  onChange={handleFileSelect}
-                  className="sr-only"
-                />
-              </label>
+              <FilePicker
+                accept={ALLOWED_EXTENSIONS}
+                maxBytes={MAX_RESUME_BYTES}
+                label="Select Resume"
+                icon={FileText}
+                typeMessage={`Only files with ${ALLOWED_EXTENSIONS.join(", ")} extensions less than 900kb are allowed`}
+                onPick={(file, error) => {
+                  setResumeFile(file);
+                  setFileError(error);
+                }}
+              />
             </div>
             <p className="text-xs text-ink/40 mt-2">
               Only files with {ALLOWED_EXTENSIONS.join(", ")} extensions less

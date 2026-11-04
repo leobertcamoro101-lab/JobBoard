@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import FieldError from '../../components/FieldError';
 import FormField from '../../components/FormField';
+import FilePicker from '../../components/FilePicker';
 import { updateProfile } from "../../api/client";
 import { useAuthStore } from "../../stores/authStore";
 import Card from "../../components/Card";
@@ -96,22 +97,10 @@ const ProfilePage = () => {
   const currentLogo = user.employer_profile?.company_logo_url;
   const currentResume = user.applicant_profile?.resume_url;
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const picked = e.target.files?.[0];
-    if (!picked) return;
-    const ext = "." + picked.name.split(".").pop()?.toLowerCase();
-    if (!allowedExt.includes(ext)) {
-      setFileError(`Only ${allowedExt.join(", ")} files are allowed`);
-      setFile(null);
-    } else if (picked.size > MAX_BYTES) {
-      setFileError("File must be less than 900kb");
-      setFile(null);
-    } else {
-      setFileError("");
-      setFile(picked);
-      setRemoveLogo(false);
-    }
-    e.target.value = "";
+  const handlePick = (picked: File | null, error: string) => {
+    setFile(picked);
+    setFileError(error);
+    if (picked) setRemoveLogo(false);
   };
 
   const onSubmit = (d: ProfileForm) => {
@@ -141,21 +130,8 @@ const ProfilePage = () => {
   const status = (mutation.error as any)?.response?.status;
   const showServerBanner = mutation.isError && status !== 422;
 
-  const pickerButton = (label: string, Icon: typeof FileText) => (
-    <label
-      className="cursor-pointer inline-flex items-center justify-center gap-2
-                      border border-evergreen text-evergreen hover:bg-evergreen/5
-                      text-sm font-bold px-4 py-2.5 rounded-xl transition-colors shrink-0
-                    has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-evergreen has-[:focus-visible]:ring-offset-2"
-    >
-      <Icon size={16} /> {label}
-      <input
-        type="file"
-        accept={allowedExt.join(",")}
-        onChange={handleFile}
-        className="sr-only"
-      />
-    </label>
+  const pickerButton = (label: string, icon: typeof FileText) => (
+    <FilePicker accept={allowedExt} maxBytes={MAX_BYTES} label={label} icon={icon} onPick={handlePick} />
   );
 
   return (
