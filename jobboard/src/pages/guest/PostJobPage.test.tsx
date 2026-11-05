@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -47,9 +47,12 @@ const job = {
 
 const DESCRIPTION = 'We are looking for a thoughtful engineer to help build and grow our hiring platform. '.repeat(2);
 
-const renderPage = (path = '/post') =>
-  render(
-    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })}>
+const renderPage = (path = '/post') => {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  return {
+    client,
+    ...render(
+    <QueryClientProvider client={client}>
       <MemoryRouter initialEntries={[path]}>
         <Routes>
           <Route path="/post" element={<PostJobPage />} />
@@ -59,7 +62,9 @@ const renderPage = (path = '/post') =>
         </Routes>
       </MemoryRouter>
     </QueryClientProvider>,
-  );
+    ),
+  };
+};
 
 const fillValid = async (user: ReturnType<typeof userEvent.setup>) => {
   await user.type(screen.getByLabelText(/^Job Title/), 'Backend Engineer');
@@ -237,6 +242,23 @@ describe('PostJobPage, editing', () => {
     renderPage('/jobs/12/edit');
     expect(await screen.findByRole('alert')).toHaveTextContent('You can only edit jobs that you posted.');
     expect(screen.queryByLabelText(/^Job Title/)).not.toBeInTheDocument();
+  });
+
+  it('keeps what the employer has typed when the job refetches in the background', async () => {
+    const user = userEvent.setup();
+    const { client } = renderPage('/jobs/12/edit');
+    const title = await screen.findByDisplayValue('Senior React Developer');
+    await user.clear(title);
+    await user.type(title, 'My unsaved title');
+
+    mocks.getJob.mockResolvedValue({ ...job, location: 'Manila' });
+    await act(async () => {
+      await client.invalidateQueries({ queryKey: ['job'] });
+    });
+    expect(mocks.getJob).toHaveBeenCalledTimes(2);
+
+    expect(screen.getByLabelText(/^Job Title/)).toHaveValue('My unsaved title');
+    expect(screen.getByLabelText(/^Location/)).toHaveValue('Cebu City');
   });
 
   it('says so when the job does not exist', async () => {
