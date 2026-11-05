@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Eye, EyeOff } from "lucide-react";
 import FormField from "../../components/FormField";
+import { inputClass } from "../../utils/inputClass";
 import { useAuthStore } from "../../stores/authStore";
 import { getPostLoginTarget } from "../../utils/authRedirect";
 import { getErrorMessage } from "../../utils/apiError";
@@ -24,11 +25,6 @@ const loginSchema = z.object({
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
-
-const inputClass = (hasError?: boolean) =>
-  `w-full bg-paper border ${hasError ? "border-red-400" : "border-hairline"}
-   text-ink text-sm rounded-xl px-4 py-3 outline-none focus:border-evergreen
-   transition-colors placeholder-ink/40`;
 
 const ApplicantLogin = () => {
   const navigate = useNavigate();
@@ -85,7 +81,7 @@ const ApplicantLogin = () => {
                 {...register("password")}
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
-                className={`${inputClass(!!errors.password)} pr-11`}
+                className={inputClass(!!errors.password, 'default', 'pr-11')}
               />
               <button
                 type="button"

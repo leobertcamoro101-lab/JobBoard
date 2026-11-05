@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Image as ImageIcon } from "lucide-react";
 import FieldError from '../../components/FieldError';
 import FormField from '../../components/FormField';
+import { inputClass } from "../../utils/inputClass";
 import FilePicker from '../../components/FilePicker';
 import { useAuthStore } from "../../stores/authStore";
 import { getErrorMessage } from "../../utils/apiError";
@@ -43,11 +44,6 @@ const step1Schema = z
   });
 
 type Step1Form = z.infer<typeof step1Schema>;
-
-const inputClass = (hasError?: boolean) =>
-  `w-full bg-paper border ${hasError ? "border-red-400" : "border-hairline"}
-   text-ink text-sm rounded-xl px-4 py-3 outline-none focus:border-evergreen
-   transition-colors placeholder-ink/40`;
 
 const EmployerSignup = () => {
   const navigate = useNavigate();

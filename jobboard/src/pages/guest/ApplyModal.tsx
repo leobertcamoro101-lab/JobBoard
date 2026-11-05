@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import FormField from "../../components/FormField";
+import { inputClass } from "../../utils/inputClass";
 import { applyForJob } from "../../api/client";
 import { useAuthStore } from "../../stores/authStore";
 import type { Job } from "../../types";
@@ -49,11 +50,6 @@ const ApplyModal = ({ job, onClose }: Props) => {
       queryClient.invalidateQueries({ queryKey: ["job"] });
     },
   });
-
-  const inputClass = (hasError?: boolean) =>
-    `w-full bg-paper border ${hasError ? "border-red-400" : "border-hairline"}
-     text-ink text-sm rounded-xl px-3 py-2.5 outline-none focus:border-evergreen
-     transition-colors placeholder-ink/40`;
 
   return (
     <Modal onClose={onClose} maxWidth="max-w-lg" labelledBy="apply-title">
@@ -117,7 +113,6 @@ const ApplyModal = ({ job, onClose }: Props) => {
             location={location}
             register={register}
             errors={errors}
-            inputClass={inputClass}
           />
 
           <FormField label="Phone" size="compact">
@@ -125,7 +120,7 @@ const ApplyModal = ({ job, onClose }: Props) => {
               id="apply-phone"
               {...register("phone")}
               placeholder="+63 912 345 6789"
-              className={inputClass()}
+              className={inputClass(false, 'compact')}
             />
           </FormField>
 
@@ -134,7 +129,7 @@ const ApplyModal = ({ job, onClose }: Props) => {
               id="apply-linkedin"
               {...register("linkedin")}
               placeholder="https://linkedin.com/in/..."
-              className={inputClass(!!errors.linkedin)}
+              className={inputClass(!!errors.linkedin, 'compact')}
             />
           </FormField>
 
@@ -143,7 +138,7 @@ const ApplyModal = ({ job, onClose }: Props) => {
               id="apply-portfolio"
               {...register("portfolio")}
               placeholder="https://yoursite.com"
-              className={inputClass(!!errors.portfolio)}
+              className={inputClass(!!errors.portfolio, 'compact')}
             />
           </FormField>
 
@@ -153,7 +148,7 @@ const ApplyModal = ({ job, onClose }: Props) => {
               {...register("cover_letter")}
               rows={6}
               placeholder="Tell us why you're a great fit for this role..."
-              className={`${inputClass(!!errors.cover_letter)} resize-none`}
+              className={inputClass(!!errors.cover_letter, 'compact', 'resize-none')}
             />
           </FormField>
 

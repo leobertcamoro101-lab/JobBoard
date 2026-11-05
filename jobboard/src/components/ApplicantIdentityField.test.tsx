@@ -28,7 +28,6 @@ const Harness = ({ user, errors = {} }: { user: User | null; errors?: FieldError
         location={location}
         register={register}
         errors={errors}
-        inputClass={() => ''}
       />
     </MemoryRouter>
   );

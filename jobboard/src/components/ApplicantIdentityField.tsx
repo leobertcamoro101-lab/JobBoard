@@ -4,16 +4,16 @@ import type { FieldErrors, UseFormRegister } from "react-hook-form";
 import type { User } from "../types";
 import type { ApplyForm } from "../schemas/applySchema";
 import FormField from "./FormField";
+import { inputClass } from "../utils/inputClass";
 
 interface Props {
   user: User | null;
   location: Location;
   register: UseFormRegister<ApplyForm>;
   errors: FieldErrors<ApplyForm>;
-  inputClass: (hasError?: boolean) => string;
 }
 
-const ApplicantIdentityField = ({ user, location, register, errors, inputClass }: Props) => {
+const ApplicantIdentityField = ({ user, location, register, errors }: Props) => {
   const isApplicant = user?.role === "applicant";
   const profile = user?.applicant_profile;
 
@@ -49,11 +49,11 @@ const ApplicantIdentityField = ({ user, location, register, errors, inputClass }
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField label="Full Name *" size="compact" error={errors.name}>
           <input id="apply-name" {...register("name")}
-            placeholder="John Doe" className={inputClass(!!errors.name)} />
+            placeholder="John Doe" className={inputClass(!!errors.name, 'compact')} />
         </FormField>
         <FormField label="Email *" size="compact" error={errors.email}>
           <input id="apply-email" {...register("email")}
-            type="email" placeholder="john@example.com" className={inputClass(!!errors.email)} />
+            type="email" placeholder="john@example.com" className={inputClass(!!errors.email, 'compact')} />
         </FormField>
       </div>
     </>

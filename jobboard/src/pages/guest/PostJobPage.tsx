@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import FormField from "../../components/FormField";
+import { inputClass } from "../../utils/inputClass";
 import { createJob, getJob, updateJob } from "../../api/client";
 import { useAuthStore } from "../../stores/authStore";
 import Card from "../../components/Card";
@@ -102,11 +103,6 @@ const PostJobPage = () => {
       navigate(isEdit ? "/employers/dashboard" : `/jobs/${saved.id}`);
     },
   });
-
-  const inputClass = (hasError?: boolean) =>
-    `w-full bg-paper border ${hasError ? "border-red-400" : "border-hairline"}
-     text-ink text-sm rounded-xl px-4 py-3 outline-none focus:border-evergreen
-     transition-colors placeholder-ink/40`;
 
   if (isEdit && jobLoading) {
     return (
@@ -261,7 +257,7 @@ const PostJobPage = () => {
               {...register("description")}
               rows={6}
               placeholder="Describe the role, responsibilities, and what makes it exciting..."
-              className={`${inputClass(!!errors.description)} resize-none`}
+              className={inputClass(!!errors.description, 'default', 'resize-none')}
             />
           </FormField>
           <FormField label={<>Requirements <span className="text-ink/40">(one per line)</span></>} size="compact">
@@ -270,7 +266,7 @@ const PostJobPage = () => {
               {...register("requirements")}
               rows={4}
               placeholder="5+ years React experience&#10;TypeScript proficiency&#10;..."
-              className={`${inputClass()} resize-none`}
+              className={inputClass(false, 'default', 'resize-none')}
             />
           </FormField>
         </Card>

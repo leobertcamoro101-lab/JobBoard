@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import FieldError from '../../components/FieldError';
 import FormField from '../../components/FormField';
+import { inputClass } from "../../utils/inputClass";
 import FilePicker from '../../components/FilePicker';
 import { updateProfile } from "../../api/client";
 import { useAuthStore } from "../../stores/authStore";
@@ -32,11 +33,6 @@ const schema = z.object({
 });
 
 type ProfileForm = z.infer<typeof schema>;
-
-const inputClass = (hasError?: boolean) =>
-  `w-full bg-paper border ${hasError ? "border-red-400" : "border-hairline"}
-   text-ink text-sm rounded-xl px-4 py-3 outline-none focus:border-evergreen
-   transition-colors placeholder-ink/40`;
 
 const ProfilePage = () => {
   const user = useAuthStore((s) => s.user);

@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import FormField from '../../components/FormField';
+import { inputClass } from "../../utils/inputClass";
 import { changePassword } from "../../api/client";
 import Card from "../../components/Card";
 
@@ -32,11 +33,6 @@ const schema = z
   });
 
 type ChangePasswordForm = z.infer<typeof schema>;
-
-const inputClass = (hasError?: boolean) =>
-  `w-full bg-paper border ${hasError ? "border-red-400" : "border-hairline"}
-   text-ink text-sm rounded-xl px-4 py-3 pr-11 outline-none focus:border-evergreen
-   transition-colors placeholder-ink/40`;
 
 const ChangePasswordPage = () => {
   const [show, setShow] = useState(false);
@@ -110,7 +106,7 @@ const ChangePasswordPage = () => {
                   {...register("current_password")}
                   type={type}
                   autoComplete="current-password"
-                  className={inputClass(!!errors.current_password)}
+                  className={inputClass(!!errors.current_password, 'default', 'pr-11')}
                 />
                 {toggle}
               </div>
