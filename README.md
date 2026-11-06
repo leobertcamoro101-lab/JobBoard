@@ -45,7 +45,8 @@ A full-stack job board. Employers post roles and review applicants; job seekers 
 - Separate applicant and employer signup, two steps each (account details, then file upload)
 - Email confirmation code at signup, sent through Resend from a verified domain (SPF/DKIM); switchable
 - Token authentication with role-based route guards on the frontend and ownership checks on the API
-- Rate-limited login, signup and code confirmation
+- Rate-limited login, signup and code confirmation; a pending signup is discarded after five wrong codes
+- Tokens expire after one day, or 30 days with "Keep Me Logged In"
 - Responsive layout with a mobile hamburger menu
 - Route-level code splitting (lazy-loaded pages)
 - Accessibility: every form field goes through one shared `FormField` component that wires the label, hint and error to the input; named dialogs with focus management; one shared `FilePicker` for resume and logo uploads (type and size checks, keyboard-reachable)
@@ -166,7 +167,7 @@ By default signup asks for a 4-digit confirmation code. With `MAIL_MAILER=log` t
 | Level | Tool | Run |
 |---|---|---|
 | Frontend unit and component | Vitest, React Testing Library, user-event (218 tests) | `cd jobboard && npm test` |
-| API feature tests | Laravel / PHPUnit (45 tests) | `cd jobboard-api && php artisan test` |
+| API feature tests | Laravel / PHPUnit (52 tests) | `cd jobboard-api && php artisan test` |
 | End to end (full hiring flow, accessibility) | Playwright (14 tests) | `cd jobboard && npx playwright test` |
 
 All three run in GitHub Actions on every push. The frontend tests cover the forms, modals, auth store, API client (headers, 401 handling, multipart uploads) and the post-login redirect rules, with assertions on accessible names and error descriptions rather than markup. Vitest only picks up `src/**/*.test.{ts,tsx}`, so it never collides with the Playwright specs in `e2e/`.
@@ -210,10 +211,20 @@ Nothing reaches production unless CI passes.
 
 Pull requests run the tests but never deploy. I checked the failure path by pushing a deliberately broken commit: the build job failed, the deploy job was skipped, Vercel created no deployment, and Railway marked the deploy as skipped.
 
+## Security
+
+- **Authorization in the API:** ownership and role checks on every protected action, covered by feature tests. The UI guards are cosmetic.
+- **Tokens:** Sanctum bearer tokens with a per-token expiry (one day, or 30 days when "Keep Me Logged In" is ticked). Changing a password needs the current one and signs out other devices.
+- **Signup codes:** four digits, valid for 15 minutes, and a pending signup is discarded after five wrong guesses. Login, signup, confirmation and resend are rate limited by email and IP.
+- **Uploads and input:** type and size validated on the client and the server; every form is validated with Zod and again by Laravel.
+- **Frontend headers:** `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` and `Permissions-Policy` from `vercel.json`, plus a `Content-Security-Policy-Report-Only` header that I will enforce once it has run clean on every page.
+- **Deploys:** secrets live in environment variables and GitHub secrets, and nothing deploys unless CI passes.
+
 ## Known limitations
 
 - No password reset by email
 - Uploaded resumes are stored on a public disk under unguessable file names
+- The auth token is kept in browser storage, the usual trade-off for a single-page app
 
 ## Roadmap
 

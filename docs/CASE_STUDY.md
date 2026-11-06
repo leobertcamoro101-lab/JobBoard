@@ -32,13 +32,14 @@ React, Vite and TypeScript on the frontend, with Tailwind CSS, TanStack Query, Z
 
 ## Quality and safety
 
-- **45 API feature tests** run against a real PostgreSQL database: ownership rules, applying, signup, profile and password changes. The base test class refuses to run unless the database name ends in `_test` and the host is local, so a misconfigured run can never wipe development or production data.
+- **52 API feature tests** run against a real PostgreSQL database: ownership rules, applying, signup, profile and password changes. The base test class refuses to run unless the database name ends in `_test` and the host is local, so a misconfigured run can never wipe development or production data.
 - **218 frontend tests** (Vitest, React Testing Library) cover the forms, modals, auth store, API client and post-login redirects. They query by accessible name and check error descriptions instead of markup, and they cover the 429 "too many attempts" path. Writing the API client tests also showed that two stacked Axios interceptors both handled a 401, and the second forced a full page reload to `/login`, overriding the auth store.
 - **14 Playwright end-to-end tests** cover the hiring flow and accessibility in a real browser. The hiring flow runs as one scenario: the employer signs up and posts, the applicant signs up with a resume and applies, the employer accepts, and the applicant sees the decision. The suite runs in GitHub Actions against its own throwaway Postgres database and API, and a guard aborts the run if the API ever points at data it didn't create.
 - **Accessibility:** every form field goes through one `FormField` component, so the label, hint and error are linked to the input in one place (`aria-invalid`, `aria-describedby`) instead of being rebuilt by hand in about 45 places. The refactor was done behind tests: I wrote page tests first, converted the form, and checked that breaking the wiring made a test fail. Those tests also caught a form missing `noValidate`, where the browser's own tooltip hid the app's error message. Dialogs are named, take focus when they open and return it to the opener on close. File uploads share one `FilePicker` component (type and size checks in one place, keyboard-reachable) instead of three copies. Playwright tests check all of it, including duplicate ids.
 - **CI** runs the API tests on a Postgres service container, then type-checks and builds the frontend. The end-to-end job runs alongside them. The frontend unit tests run with `npm test`.
 - **Rate limiting** applies to login, signup, code confirmation and resend, keyed by email and IP. That needed two production settings: trusting Railway's proxy so Laravel sees real visitor IPs, and a persistent cache store, since counters on the `array` store reset on every request.
 - **Passwords and uploads:** strength rules are enforced on the client and the server. Changing a password requires the current one and signs out other devices. Uploads are validated by type and size, and replaced files are deleted.
+- **Token lifetime and code guessing:** a review of my own auth code showed that tokens never expired and that "Keep Me Logged In" only touched a session cookie the API doesn't use. Tokens now expire per token (one day, or 30 days when ticked), and the four-digit signup code is discarded after five wrong guesses, since a rate limit by email and IP alone doesn't stop a guesser who rotates IPs. Nine feature tests cover both. The frontend sends security headers and a report-only Content-Security-Policy, which I'll enforce once it has run clean on every page.
 
 ## Delivery pipeline
 
@@ -46,7 +47,7 @@ Deploys are gated on CI. A push to `main` runs the API tests, the frontend build
 
 ## Known limitations
 
-There is no password reset by email yet. The verified sending domain is in place, so it is the next feature. Uploaded resumes sit on a public disk under unguessable file names, which is not the same as private storage; signed, expiring links would be the proper fix.
+There is no password reset by email yet. The verified sending domain is in place, so it is the next feature. Uploaded resumes sit on a public disk under unguessable file names, which is not the same as private storage; signed, expiring links would be the proper fix. The auth token also lives in browser storage, the usual trade-off for a single-page app, which is why the Content-Security-Policy matters.
 
 ## How I worked
 

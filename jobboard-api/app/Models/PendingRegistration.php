@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PendingRegistration extends Model
 {
-    protected $fillable = ['email', 'code', 'payload', 'expires_at'];
+    protected $fillable = ['email', 'code', 'payload', 'expires_at', 'attempts'];
 
     protected function casts(): array
     {

@@ -18,6 +18,17 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    /** Wrong confirmation codes allowed before the pending signup is discarded. */
+    private const MAX_CODE_ATTEMPTS = 5;
+
+    private function issueToken(User $user, bool $remember = false): string
+    {
+        // Per-token expiry. Keep 'expiration' => null in config/sanctum.php so this applies.
+        $expires = $remember ? now()->addDays(30) : now()->addDay();
+
+        return $user->createToken('auth', ['*'], $expires)->plainTextToken;
+    }
+
     private function requiresConfirmation(): bool
     {
         return (bool) config('jobboard.require_email_confirmation', true);
@@ -29,7 +40,7 @@ class AuthController extends Controller
 
         PendingRegistration::updateOrCreate(
             ['email' => $email],
-            ['code' => $code, 'payload' => $payload, 'expires_at' => now()->addMinutes(15)]
+            ['code' => $code, 'payload' => $payload, 'expires_at' => now()->addMinutes(15), 'attempts' => 0]
         );
 
         // Confirmation switched off: keep the pending row, send nothing
@@ -61,7 +72,18 @@ class AuthController extends Controller
             ]);
         }
 
-        if ($this->requiresConfirmation() && $pending->code !== $code) {
+        if ($this->requiresConfirmation() && ! hash_equals($pending->code, (string) $code)) {
+            $pending->increment('attempts');
+
+            // Too many wrong guesses: throw the signup away so the code can't be brute-forced
+            if ($pending->attempts >= self::MAX_CODE_ATTEMPTS) {
+                $pending->delete();
+
+                throw ValidationException::withMessages([
+                    'code' => 'Too many incorrect codes. Please start again.',
+                ]);
+            }
+
             throw ValidationException::withMessages(['code' => 'Invalid confirmation code']);
         }
 
@@ -140,7 +162,7 @@ class AuthController extends Controller
 
         $pending->delete();
 
-        $token = $user->createToken('auth')->plainTextToken;
+        $token = $this->issueToken($user);
 
         return response()->json([
             'user' => $user->load('applicantProfile'),
@@ -212,7 +234,7 @@ class AuthController extends Controller
 
         $pending->delete();
 
-        $token = $user->createToken('auth')->plainTextToken;
+        $token = $this->issueToken($user);
 
         return response()->json([
             'user' => $user->load('employerProfile'),
@@ -241,14 +263,14 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+        if (! Auth::attempt($request->only('email', 'password'))) {
             throw ValidationException::withMessages(['email' => 'Invalid credentials']);
         }
 
         $user = Auth::user();
         $user->load($user->role === 'employer' ? 'employerProfile' : 'applicantProfile');
 
-        $token = $user->createToken('auth')->plainTextToken;
+        $token = $this->issueToken($user, $request->boolean('remember'));
 
         return response()->json(['user' => $user, 'token' => $token]);
     }
