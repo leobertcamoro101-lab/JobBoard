@@ -10,6 +10,8 @@ import {
   EmployerLogin,
   ApplicantSignup,
   EmployerSignup,
+  ForgotPasswordPage,
+  ResetPasswordPage,
   ApplicantDashboard,
   EmployerDashboard,
   JobApplicantsPage,
@@ -28,6 +30,9 @@ const router = createBrowserRouter([
       { path: '/employers', element: <EmployerLogin /> },
       { path: '/applicants/signup', element: <ApplicantSignup /> },
       { path: '/employers/signup', element: <EmployerSignup /> },
+      { path: '/applicants/forgot-password', element: <ForgotPasswordPage /> },
+      { path: '/employers/forgot-password', element: <ForgotPasswordPage /> },
+      { path: '/reset-password', element: <ResetPasswordPage /> },
       {
         path: '/applicants/dashboard',
         element: (

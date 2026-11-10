@@ -24,6 +24,10 @@ Route::post('/employer/register/confirm', [AuthController::class, 'confirmEmploy
 Route::post('/register/resend-code', [AuthController::class, 'resendCode'])->middleware('throttle:auth-resend');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth-login');
 
+// Password reset by email
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:auth-forgot');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:auth-reset');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);

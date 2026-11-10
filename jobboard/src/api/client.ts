@@ -66,6 +66,18 @@ export const getMe = (): Promise<AxiosResponse<User>> => api.get('/me');
 export const resendConfirmationCode = (data: ResendCodePayload): Promise<AxiosResponse<MessageResponse>> =>
   api.post('/register/resend-code', data);
 
+// Password reset by email
+export const forgotPassword = (email: string): Promise<MessageResponse> =>
+  api.post('/forgot-password', { email }).then((res) => res.data);
+
+export const resetPassword = (data: {
+  token: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+}): Promise<MessageResponse> =>
+  api.post('/reset-password', data).then((res) => res.data);
+
 // Auth — applicant signup (2-step)
 export const registerApplicant = (
   data: ApplicantRegisterPayload

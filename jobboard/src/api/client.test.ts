@@ -19,9 +19,11 @@ import api, {
   confirmApplicantSignup,
   confirmEmployerSignup,
   deleteJob,
+  forgotPassword,
   getJob,
   getJobs,
   login,
+  resetPassword,
   updateApplicationStatus,
   updateProfile,
 } from './client';
@@ -199,6 +201,21 @@ describe('endpoints', () => {
     const body = { current_password: 'old', password: 'new-pass-1', password_confirmation: 'new-pass-1' };
     expect(await changePassword(body)).toEqual({ message: 'Password updated' });
     expect(lastRequest()).toMatchObject({ method: 'put', url: '/profile/password' });
+    expect(JSON.parse(lastRequest().data)).toEqual(body);
+  });
+
+  it('forgotPassword posts just the email and resolves with the message', async () => {
+    reply(200, { message: 'If that email has an account, we sent a link.' });
+    expect(await forgotPassword('a@b.test')).toEqual({ message: 'If that email has an account, we sent a link.' });
+    expect(lastRequest()).toMatchObject({ method: 'post', url: '/forgot-password' });
+    expect(JSON.parse(lastRequest().data)).toEqual({ email: 'a@b.test' });
+  });
+
+  it('resetPassword posts the token, email and both passwords', async () => {
+    reply(200, { message: 'Reset' });
+    const body = { token: 'tok', email: 'a@b.test', password: 'New-Passw0rd!x', password_confirmation: 'New-Passw0rd!x' };
+    expect(await resetPassword(body)).toEqual({ message: 'Reset' });
+    expect(lastRequest()).toMatchObject({ method: 'post', url: '/reset-password' });
     expect(JSON.parse(lastRequest().data)).toEqual(body);
   });
 

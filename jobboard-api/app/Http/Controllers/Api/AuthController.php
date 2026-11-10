@@ -8,11 +8,14 @@ use App\Models\ApplicantProfile;
 use App\Models\EmployerProfile;
 use App\Models\PendingRegistration;
 use App\Models\User;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -273,6 +276,61 @@ class AuthController extends Controller
         $token = $this->issueToken($user, $request->boolean('remember'));
 
         return response()->json(['user' => $user, 'token' => $token]);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $data = $request->validate(['email' => ['required', 'email']]);
+
+        try {
+            Password::sendResetLink(['email' => $data['email']]);
+        } catch (\Throwable $e) {
+            // Log the failure (never the token or the address), but answer the same way
+            Log::error('Password reset email failed', ['error' => $e->getMessage()]);
+        }
+
+        // Same answer whether or not the account exists, so this can't be used to find emails
+        return response()->json([
+            'message' => 'If that email has an account, we\'ve sent a link to reset the password.',
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $data = $request->validate([
+            'token' => ['required', 'string'],
+            'email' => ['required', 'email'],
+            'password' => $this->passwordRules(),
+            'password_confirmation' => ['required', 'same:password'],
+        ]);
+
+        $status = Password::reset(
+            [
+                'email' => $data['email'],
+                'password' => $data['password'],
+                'password_confirmation' => $data['password_confirmation'],
+                'token' => $data['token'],
+            ],
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => $password,
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                // A reset may be someone recovering a stolen account: sign out every device
+                $user->tokens()->delete();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        if ($status !== Password::PASSWORD_RESET) {
+            throw ValidationException::withMessages([
+                'email' => 'This reset link is invalid or has expired. Please request a new one.',
+            ]);
+        }
+
+        return response()->json(['message' => 'Your password has been reset. You can log in now.']);
     }
 
     public function changePassword(Request $request)

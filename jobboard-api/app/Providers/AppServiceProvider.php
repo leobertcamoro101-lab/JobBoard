@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\File;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -49,5 +51,30 @@ class AppServiceProvider extends ServiceProvider
         // Resend the code: 2 a minute per email+IP
         RateLimiter::for('auth-resend', fn (Request $r) =>
             Limit::perMinute(2)->by(strtolower((string) $r->input('email')) . '|' . $r->ip()));
+
+        // Forgot password: 3 a minute per email+IP, and 10 a minute per IP overall
+        RateLimiter::for('auth-forgot', fn (Request $r) => [
+            Limit::perMinute(3)->by(strtolower((string) $r->input('email')) . '|' . $r->ip()),
+            Limit::perMinute(10)->by($r->ip()),
+        ]);
+
+        // Reset password: 5 tries per 15 minutes per email+IP
+        RateLimiter::for('auth-reset', fn (Request $r) =>
+            Limit::perMinutes(15, 5)->by(strtolower((string) $r->input('email')) . '|' . $r->ip()));
+
+        // The reset email links to the React app, not to the API
+        ResetPassword::toMailUsing(function ($user, string $token) {
+            $url = rtrim(config('jobboard.frontend_url', 'http://localhost:5173'), '/')
+                . '/reset-password?token=' . $token
+                . '&email=' . urlencode($user->getEmailForPasswordReset());
+            $minutes = config('auth.passwords.' . config('auth.defaults.passwords') . '.expire', 60);
+
+            return (new MailMessage)
+                ->subject('Reset your JobBoard password')
+                ->line('We received a request to reset the password for your JobBoard account.')
+                ->action('Reset password', $url)
+                ->line("This link works once and expires in {$minutes} minutes.")
+                ->line('If you did not ask for this, ignore this email. Your password stays the same.');
+        });
     }
 }

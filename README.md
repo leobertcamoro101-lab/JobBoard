@@ -234,4 +234,4 @@ Pull requests run the tests but never deploy. I checked the failure path by push
 
 Leobert Camoro, software engineer based in Cebu City, Philippines.
 
-[GitHub](https://github.com/leobertcamoro101-lab) · [Portfolio](https://portfo-leo-puce.vercel.app/) · [LinkedIn](https://www.linkedin.com/in/leobert-camoro-1b811a231/)
+[GitHub](https://github.com/leobertcamoro101-lab) · [Portfolio](https://www.leobert-camoro.dev/) · [LinkedIn](https://www.linkedin.com/in/leobert-camoro-1b811a231/)
