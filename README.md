@@ -221,7 +221,7 @@ Pull requests run the tests but never deploy. I checked the failure path by push
 - **Signup codes:** four digits, valid for 15 minutes, and a pending signup is discarded after five wrong guesses. Login, signup, confirmation and resend are rate limited by email and IP.
 - **Password reset:** the API gives the same answer whether or not an email has an account, so it can't be used to find users. Reset tokens are single-use and expire after 60 minutes, a reset signs out every device, and both endpoints are rate limited.
 - **Uploads and input:** type and size validated on the client and the server; every form is validated with Zod and again by Laravel.
-- **Frontend headers:** `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` and `Permissions-Policy` from `vercel.json`, plus a `Content-Security-Policy-Report-Only` header that I will enforce once it has run clean on every page.
+- **Frontend headers:** `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` and `Permissions-Policy` from `vercel.json`, plus an enforced `Content-Security-Policy` that limits scripts, styles, images and API calls to this app and the API host. It ran in report-only mode first and was checked page by page before being enforced.
 - **Deploys:** secrets live in environment variables and GitHub secrets, and nothing deploys unless CI passes.
 
 ## Known limitations
@@ -232,7 +232,6 @@ Pull requests run the tests but never deploy. I checked the failure path by push
 ## Roadmap
 
 - Private resume storage with signed, expiring links
-- Enforce the Content-Security-Policy once it has run clean on every page
 
 ## Author
 
