@@ -170,7 +170,7 @@ By default signup asks for a 4-digit confirmation code. With `MAIL_MAILER=log` t
 | Level | Tool | Run |
 |---|---|---|
 | Frontend unit and component | Vitest, React Testing Library, user-event (244 tests) | `cd jobboard && npm test` |
-| API feature tests | Laravel / PHPUnit (69 tests) | `cd jobboard-api && php artisan test` |
+| API feature tests | Laravel / PHPUnit (67 tests) | `cd jobboard-api && php artisan test` |
 | End to end (full hiring flow, accessibility) | Playwright (14 tests) | `cd jobboard && npx playwright test` |
 
 All three run in GitHub Actions on every push. The frontend tests cover the forms, modals, auth store, API client (headers, 401 handling, multipart uploads) and the post-login redirect rules, with assertions on accessible names and error descriptions rather than markup. Vitest only picks up `src/**/*.test.{ts,tsx}`, so it never collides with the Playwright specs in `e2e/`.
